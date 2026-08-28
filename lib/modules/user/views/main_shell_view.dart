@@ -74,13 +74,25 @@ class MainShellView extends GetView<UserSharedController> {
           },
         ),
       ),
-      title: Text(
-        'AI RAG ChatBot',
-        style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
+      title: Obx(() {
+        final titles = [
+          'Dashboard',
+          'Chat Assistant',
+          'Knowledge Sources',
+          'Leads',
+          'Bot Settings',
+        ];
+        final index = controller.currentTabIndex.value;
+        final title = (index >= 0 && index < titles.length) ? titles[index] : 'AI RAG ChatBot';
+
+        return Text(
+          title,
+          style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+          ),
+        );
+      }),
       actions: [
         IconButton(
           icon: Icon(

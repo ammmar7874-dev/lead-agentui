@@ -330,14 +330,6 @@ class _SignupViewState extends State<SignupView> {
                     ),
                   ],
                 ).animate().fadeIn(duration: 400.ms, delay: 300.ms),
-
-                const SizedBox(height: 14),
-
-                // Footer (Privacy Policy · Terms · Support)
-                Text(
-                  'Privacy Policy   Terms   Support',
-                  style: AppTextStyles.bodySmall(isDark: true, color: AppColors.darkTextMuted),
-                ).animate().fadeIn(duration: 400.ms, delay: 350.ms),
               ],
             ),
           ),
