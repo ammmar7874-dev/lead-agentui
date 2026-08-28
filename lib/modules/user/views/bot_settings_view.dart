@@ -438,7 +438,7 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 1: SUB-TABS NAVIGATION BAR
+  // 1: ANIMATED SUB-TABS NAVIGATION BAR
   // ==========================================
   Widget _buildSubTabsBar(BotSettingsController controller, bool isDark) {
     final tabs = [
@@ -452,56 +452,101 @@ class BotSettingsView extends StatelessWidget {
     ];
 
     return Container(
+      height: 52,
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         border: Border(
           bottom: BorderSide(
             color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+            width: 1,
           ),
         ),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(
           children: tabs.map((tab) {
             final isSelected = controller.activeSubTab.value == tab['key'];
             final icon = tab['icon'] as IconData;
             final label = tab['label'] as String;
 
-            return InkWell(
-              onTap: () => controller.selectSubTab(tab['key'] as String),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: isSelected ? AppColors.primary : Colors.transparent,
-                      width: 2.5,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => controller.selectSubTab(tab['key'] as String),
+                  borderRadius: BorderRadius.circular(10),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? (isDark
+                              ? AppColors.primarySoft.withValues(alpha: 0.22)
+                              : AppColors.primary.withValues(alpha: 0.08))
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedScale(
+                              scale: isSelected ? 1.08 : 1.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Icon(
+                                icon,
+                                size: 16,
+                                color: isSelected
+                                    ? AppColors.primaryLight
+                                    : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                              ),
+                            ),
+                            const SizedBox(width: 7),
+                            AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 200),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                fontFamily: 'Inter',
+                                color: isSelected
+                                    ? (isDark ? Colors.white : AppColors.primary)
+                                    : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                              ),
+                              child: Text(label),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        // Animated Glow Underline Indicator
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOutCubic,
+                          height: 2.5,
+                          width: isSelected ? 28 : 0,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(alpha: 0.6),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      icon,
-                      size: 16,
-                      color: isSelected
-                          ? (isDark ? Colors.white : AppColors.primary)
-                          : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                        color: isSelected
-                            ? (isDark ? Colors.white : AppColors.primary)
-                            : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
