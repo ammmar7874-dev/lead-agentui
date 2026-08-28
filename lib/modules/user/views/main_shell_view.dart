@@ -5,15 +5,27 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_badge.dart';
 import '../../auth/controllers/auth_controller.dart';
-import '../controllers/knowledge_controller.dart';
 import '../controllers/user_shared_controller.dart';
 import 'bot_settings_view.dart';
 import 'chat_view.dart';
+import 'crawl_failures_view.dart';
 import 'dashboard_view.dart';
+import 'escalations_view.dart';
+import 'feedback_view.dart';
+import 'governance_view.dart';
+import 'ingestion_view.dart';
+import 'knowledge_gaps_view.dart';
 import 'knowledge_sources_view.dart';
 import 'leads_view.dart';
+import 'live_activity_view.dart';
+import 'messages_analytics_view.dart';
+import 'my_reviews_view.dart';
 import 'profile_view.dart';
+import 'sync_jobs_view.dart';
 import 'token_usage_view.dart';
+import 'transcripts_view.dart';
+import 'visitors_view.dart';
+import 'widget_manager_view.dart';
 
 class MainShellView extends GetView<UserSharedController> {
   const MainShellView({super.key});
@@ -87,7 +99,7 @@ class MainShellView extends GetView<UserSharedController> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Excels Tech RAG',
+                'AI ChatBot Platform',
                 style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontSize: 14, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 1),
@@ -116,17 +128,23 @@ class MainShellView extends GetView<UserSharedController> {
         ],
       ),
       actions: [
-        // Live Data Pulse Pill
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: CustomBadge(
-            text: 'Live Data',
-            isPulsing: true,
-            backgroundColor: AppColors.successSoft,
-            textColor: AppColors.success,
-            borderColor: AppColors.success.withValues(alpha: 0.3),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            fontSize: 10,
+        // Live Data Pulse Pill (Clickable -> LiveActivityView)
+        GestureDetector(
+          onTap: () {
+            PlatformHelper.lightHaptic();
+            Get.to(() => const LiveActivityView());
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: CustomBadge(
+              text: 'Live Data',
+              isPulsing: true,
+              backgroundColor: AppColors.successSoft,
+              textColor: AppColors.success,
+              borderColor: AppColors.success.withValues(alpha: 0.3),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              fontSize: 10,
+            ),
           ),
         ),
         const SizedBox(width: 6),
@@ -226,7 +244,6 @@ class MainShellView extends GetView<UserSharedController> {
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
                       child: Text(
                         '$badgeCount',
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
@@ -272,8 +289,8 @@ class MainShellView extends GetView<UserSharedController> {
               child: Row(
                 children: [
                   Container(
-                    width: 52,
-                    height: 52,
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       boxShadow: [
@@ -287,6 +304,11 @@ class MainShellView extends GetView<UserSharedController> {
                       child: Image.asset(
                         'assets/images/bot_mascot.jpg',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.smart_toy_rounded,
+                          color: AppColors.primary,
+                          size: 28,
+                        ),
                       ),
                     ),
                   ),
@@ -301,10 +323,12 @@ class MainShellView extends GetView<UserSharedController> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Enterprise Plan • Active',
+                          'zia@excels-tech.com • Admin',
+                          overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
                             color: AppColors.success,
                             fontWeight: FontWeight.w600,
+                            fontSize: 11,
                           ),
                         ),
                       ],
@@ -314,118 +338,199 @@ class MainShellView extends GetView<UserSharedController> {
               ),
             ),
 
-            // Modules Scroll List
+            // Modules Scroll List matching exact web sidebar
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 children: [
-                  _buildDrawerSectionTitle('CORE MODULES', isDark),
+                  // 1: CORE
+                  _buildDrawerSectionTitle('• CORE', isDark),
                   _buildDrawerTile(
-                    icon: Icons.dashboard_outlined,
-                    title: 'Dashboard Overview',
+                    icon: Icons.dashboard_rounded,
+                    title: 'Dashboard',
                     onTap: () => controller.navigateFromDrawer('dashboard'),
                     isDark: isDark,
                   ),
                   _buildDrawerTile(
-                    icon: Icons.forum_outlined,
-                    title: 'Live RAG AI Chat',
+                    icon: Icons.chat_bubble_rounded,
+                    title: 'Chat',
                     onTap: () => controller.navigateFromDrawer('chat'),
                     isDark: isDark,
                   ),
                   _buildDrawerTile(
-                    icon: Icons.analytics_outlined,
-                    title: 'Token Usage & Analytics',
+                    icon: Icons.show_chart_rounded,
+                    title: 'Live Activity',
+                    badgeText: '25 Live',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const LiveActivityView());
+                    },
+                    isDark: isDark,
+                  ),
+
+                  const SizedBox(height: 12),
+                  // 2: BOT
+                  _buildDrawerSectionTitle('• BOT', isDark),
+                  _buildDrawerTile(
+                    icon: Icons.settings_suggest_rounded,
+                    title: 'Bot Settings',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const BotSettingsView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.language_rounded,
+                    title: 'Widget Manager',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const WidgetManagerView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.track_changes_rounded,
+                    title: 'Leads',
+                    badgeText: '3 Total',
+                    onTap: () => controller.navigateFromDrawer('leads'),
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.groups_rounded,
+                    title: 'Visitors',
+                    badgeText: '301',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const VisitorsView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.receipt_long_rounded,
+                    title: 'Transcripts',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const TranscriptsView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.sentiment_satisfied_alt_rounded,
+                    title: 'Feedback',
+                    badgeText: '4.8 ★',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const FeedbackView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.notifications_active_rounded,
+                    title: 'Escalations',
+                    badgeText: '1 Open',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const EscalationsView());
+                    },
+                    isDark: isDark,
+                  ),
+
+                  const SizedBox(height: 12),
+                  // 3: KNOWLEDGE
+                  _buildDrawerSectionTitle('• KNOWLEDGE', isDark),
+                  _buildDrawerTile(
+                    icon: Icons.library_books_rounded,
+                    title: 'Sources',
+                    badgeText: '12',
+                    onTap: () => controller.navigateFromDrawer('sources'),
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.sync_rounded,
+                    title: 'Sync Jobs',
+                    badgeText: '100',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const SyncJobsView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.hub_rounded,
+                    title: 'Ingestion (Vector DB)',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const IngestionView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.error_outline_rounded,
+                    title: 'Crawl Failures',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const CrawlFailuresView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.lightbulb_outline_rounded,
+                    title: 'Knowledge Gaps',
+                    badgeText: '2 New',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const KnowledgeGapsView());
+                    },
+                    isDark: isDark,
+                  ),
+
+                  const SizedBox(height: 12),
+                  // 4: ANALYTICS
+                  _buildDrawerSectionTitle('• ANALYTICS', isDark),
+                  _buildDrawerTile(
+                    icon: Icons.policy_rounded,
+                    title: 'Governance',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const GovernanceView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.rate_review_rounded,
+                    title: 'My Reviews',
+                    badgeText: '1 QA',
+                    onTap: () {
+                      Get.back();
+                      Get.to(() => const MyReviewsView());
+                    },
+                    isDark: isDark,
+                  ),
+                  _buildDrawerTile(
+                    icon: Icons.data_usage_rounded,
+                    title: 'Token Usage',
                     onTap: () {
                       Get.back();
                       Get.to(() => const TokenUsageView());
                     },
                     isDark: isDark,
                   ),
-
-                  const SizedBox(height: 12),
-                  _buildDrawerSectionTitle('KNOWLEDGE ENGINE', isDark),
                   _buildDrawerTile(
-                    icon: Icons.source_outlined,
-                    title: 'Sources & Documents (12)',
-                    onTap: () => controller.navigateFromDrawer('sources'),
-                    isDark: isDark,
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.sync_problem_outlined,
-                    title: 'Sync Jobs History (100)',
-                    onTap: () {
-                      controller.navigateFromDrawer('sync_jobs');
-                      Get.find<KnowledgeController>().setSubTab('sync_jobs');
-                    },
-                    isDark: isDark,
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.saved_search_rounded,
-                    title: 'Vector Search Tester',
-                    onTap: () {
-                      controller.navigateFromDrawer('sources');
-                      Get.find<KnowledgeController>().setSubTab('test_search');
-                    },
-                    isDark: isDark,
-                  ),
-
-                  const SizedBox(height: 12),
-                  _buildDrawerSectionTitle('GROWTH & LEADS', isDark),
-                  _buildDrawerTile(
-                    icon: Icons.contacts_outlined,
-                    title: 'Leads & Inquiries',
-                    badgeText: '18 Total',
-                    onTap: () => controller.navigateFromDrawer('leads'),
-                    isDark: isDark,
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.insights_outlined,
-                    title: 'Live Visitors Stream',
-                    badgeText: '25 Online',
-                    onTap: () => controller.navigateFromDrawer('visitors'),
-                    isDark: isDark,
-                  ),
-
-                  const SizedBox(height: 12),
-                  _buildDrawerSectionTitle('BOT CUSTOMIZATION', isDark),
-                  _buildDrawerTile(
-                    icon: Icons.tune_rounded,
-                    title: 'Bot Configurator & Preview',
+                    icon: Icons.mark_chat_read_rounded,
+                    title: 'Messages Telemetry',
+                    badgeText: '168 msgs',
                     onTap: () {
                       Get.back();
-                      Get.to(() => const BotSettingsView());
+                      Get.to(() => const MessagesAnalyticsView());
                     },
-                    isDark: isDark,
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.integration_instructions_outlined,
-                    title: 'Widget Embed Code',
-                    onTap: () {
-                      Get.back();
-                      Get.to(() => const BotSettingsView());
-                    },
-                    isDark: isDark,
-                  ),
-
-                  const SizedBox(height: 12),
-                  _buildDrawerSectionTitle('SECURITY & SETTINGS', isDark),
-                  _buildDrawerTile(
-                    icon: Icons.manage_accounts_outlined,
-                    title: 'Account Profile',
-                    onTap: () => controller.navigateFromDrawer('profile'),
-                    isDark: isDark,
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.security_rounded,
-                    title: 'API Keys & MFA Security',
-                    onTap: () => controller.navigateFromDrawer('profile'),
                     isDark: isDark,
                   ),
                 ],
               ),
             ),
 
-            // Bottom Logout & Version
+            // Bottom Logout
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -464,10 +569,10 @@ class MainShellView extends GetView<UserSharedController> {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 1.0,
-          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+          color: isDark ? AppColors.primaryLight : AppColors.primary,
         ),
       ),
     );

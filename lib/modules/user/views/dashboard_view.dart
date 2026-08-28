@@ -11,6 +11,9 @@ import '../../../widgets/custom_card.dart';
 import '../controllers/chat_controller.dart';
 import '../controllers/dashboard_controller.dart';
 import '../controllers/user_shared_controller.dart';
+import 'messages_analytics_view.dart';
+import 'transcripts_view.dart';
+import 'visitors_view.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -214,64 +217,81 @@ class DashboardView extends GetView<DashboardController> {
       itemBuilder: (context, index) {
         final item = metrics[index];
 
-        return CustomCard(
-          padding: const EdgeInsets.all(14),
-          backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-          borderColor: item.color.withValues(alpha: 0.25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: item.color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(item.icon, size: 18, color: item.color),
-                  ),
-                  if (item.trend != null)
+        return GestureDetector(
+          onTap: () {
+            PlatformHelper.lightHaptic();
+            final titleLower = item.title.toLowerCase();
+            if (titleLower.contains('visitor')) {
+              Get.to(() => const VisitorsView());
+            } else if (titleLower.contains('conversation')) {
+              Get.to(() => const TranscriptsView());
+            } else if (titleLower.contains('message')) {
+              Get.to(() => const MessagesAnalyticsView());
+            } else if (titleLower.contains('lead')) {
+              Get.find<UserSharedController>().switchTab(3); // Leads Tab
+            } else if (titleLower.contains('source') || titleLower.contains('knowledge')) {
+              Get.find<UserSharedController>().switchTab(2); // Sources Tab
+            }
+          },
+          child: CustomCard(
+            padding: const EdgeInsets.all(14),
+            backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+            borderColor: item.color.withValues(alpha: 0.25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      width: 32,
+                      height: 32,
                       decoration: BoxDecoration(
-                        color: AppColors.successSoft,
+                        color: item.color.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        item.trend!,
-                        style: const TextStyle(
-                          color: AppColors.success,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                      child: Icon(item.icon, size: 18, color: item.color),
+                    ),
+                    if (item.trend != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.successSoft,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          item.trend!,
+                          style: const TextStyle(
+                            color: AppColors.success,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnimatedStatCounter(
+                      value: item.value,
+                      style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnimatedStatCounter(
-                    value: item.value,
-                    style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                    const SizedBox(height: 2),
+                    Text(
+                      item.title,
+                      style: AppTextStyles.labelSmall(
+                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                      ).copyWith(fontSize: 10, letterSpacing: 0.5, fontWeight: FontWeight.w600),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item.title,
-                    style: AppTextStyles.labelSmall(
-                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                    ).copyWith(fontSize: 10, letterSpacing: 0.5, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ).animate().fadeIn(duration: 400.ms, delay: (index * 60).ms).scale(begin: const Offset(0.95, 0.95));
       },

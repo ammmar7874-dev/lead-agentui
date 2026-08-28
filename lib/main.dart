@@ -32,9 +32,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final storage = SecureStorageService.to;
     final savedTheme = storage.getThemeMode();
-
     return GetMaterialApp(
       title: 'AI RAG ChatBot',
+
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
