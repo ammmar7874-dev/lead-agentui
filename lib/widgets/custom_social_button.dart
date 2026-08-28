@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class CustomSocialButton extends StatelessWidget {
   final String label;
@@ -16,17 +17,22 @@ class CustomSocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: const Color(0xFFEDF5FF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFD4E6FA), width: 1.2),
+        color: isDark ? AppColors.darkCard : AppColors.lightSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+          width: 1.2,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           onTap: onPressed,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,13 +56,17 @@ class CustomSocialButton extends StatelessWidget {
                   ),
                 )
               else
-                Icon(icon ?? Icons.apple_rounded, color: const Color(0xFF0F172A), size: 20),
+                Icon(
+                  icon ?? Icons.apple_rounded,
+                  color: isDark ? Colors.white : Colors.black,
+                  size: 22,
+                ),
               const SizedBox(width: 8),
               Text(
                 label,
-                style: const TextStyle(
-                  color: Color(0xFF0F172A),
-                  fontSize: 14,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -13,43 +13,34 @@ class OnboardingController extends GetxController {
 
   final List<OnboardingItem> items = const [
     OnboardingItem(
-      stepNumber: '01 · AUTOMATION',
-      titlePrefix: 'AI Agents ',
-      titleSuffix: 'Do All Your Email Work',
-      subtitle: 'Autonomous Cold Outreach & Follow-Ups',
+      stepNumber: '01 · RAG KNOWLEDGE',
+      title: 'Train AI on Your ',
+      highlightWord: 'Knowledge Base',
       description:
-          'No more manual sending, forgotten follow-ups, or wasted hours. Your AI agents draft, validate & launch campaigns automatically.',
-      featureBadges: [
-        '⚡ 247+ Features',
-        '🔒 5-Step Validation Pipeline',
-      ],
-      mainIcon: Icons.mark_email_read_rounded,
+          'Connect your website, PDF documents, FAQs, and APIs. Your chatbot retrieves precise answers instantly with RAG technology.',
+      imagePath: 'assets/images/onboarding_rag.jpg',
+      badgeText: '✨ RAG-POWERED AI',
+      featureBadges: ['⚡ Vector Search', '🧠 Pinecone & OpenAI'],
     ),
     OnboardingItem(
-      stepNumber: '02 · RAG KNOWLEDGE',
-      titlePrefix: 'Instant Answers ',
-      titleSuffix: 'From Your Documents',
-      subtitle: 'Vectorized Pinecone Search & Real-time AI',
+      stepNumber: '02 · TELEMETRY',
+      title: 'Capture Leads & ',
+      highlightWord: 'Track Visitors',
       description:
-          'Connect your knowledge base, APIs, and websites. Autonomous RAG indexes documents and answers customer queries in milliseconds.',
-      featureBadges: [
-        '🧠 OpenAI & Pinecone Hybrid RAG',
-        '⚡ 99.4% Retrieval Accuracy',
-      ],
-      mainIcon: Icons.auto_awesome_rounded,
+          'Monitor live visitor sessions in real-time, qualify incoming inquiries automatically, and export high-intent leads effortlessly.',
+      imagePath: 'assets/images/onboarding_analytics.jpg',
+      badgeText: '📊 REAL-TIME ANALYTICS',
+      featureBadges: ['📈 Lead Capture', '🛰️ Live Telemetry'],
     ),
     OnboardingItem(
-      stepNumber: '03 · CONVERSIONS',
-      titlePrefix: 'Qualify Leads ',
-      titleSuffix: '& Convert 24/7',
-      subtitle: 'High-Intent Customer Handoff & Telemetry',
+      stepNumber: '03 · DEPLOYMENT',
+      title: 'Seamless Multi-Channel ',
+      highlightWord: 'Integration',
       description:
-          'Track live visitor telemetry, capture qualified buyer leads automatically, and export high-conversion CRM transcripts effortlessly.',
-      featureBadges: [
-        '📈 3.4x Higher Conversion Rate',
-        '🛡️ Enterprise PII Guardrails',
-      ],
-      mainIcon: Icons.bolt_rounded,
+          'One-line script embed for web, native mobile widgets, CRM integrations, and full bot customization with live preview.',
+      imagePath: 'assets/images/onboarding_integration.jpg',
+      badgeText: '⚡ OMNICHANNEL CHAT',
+      featureBadges: ['🌐 Web & Mobile', '🔒 Enterprise Guardrails'],
     ),
   ];
 
