@@ -4,70 +4,61 @@ import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/animated_stat_counter.dart';
 import '../../../widgets/custom_card.dart';
 import '../controllers/user_shared_controller.dart';
 
-class LiveEventItem {
-  final String icon;
-  final String title;
-  final String description;
-  final String time;
-  final Color color;
+class LiveSessionModel {
+  final String id;
+  final String site;
+  final String visitor;
+  final String started;
+  final String lastActive;
+  final String lead;
+  final bool isOnline;
 
-  LiveEventItem({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.time,
-    required this.color,
+  LiveSessionModel({
+    required this.id,
+    required this.site,
+    required this.visitor,
+    required this.started,
+    required this.lastActive,
+    required this.lead,
+    this.isOnline = true,
   });
 }
 
-class LiveActivityView extends StatelessWidget {
+class LiveActivityView extends StatefulWidget {
   const LiveActivityView({super.key});
+
+  @override
+  State<LiveActivityView> createState() => _LiveActivityViewState();
+}
+
+class _LiveActivityViewState extends State<LiveActivityView> {
+  final RxList<LiveSessionModel> _sessions = <LiveSessionModel>[
+    LiveSessionModel(
+      id: 'sess_1',
+      site: 'Excels_Tech Widget',
+      visitor: 'Visitor #1092',
+      started: '2m ago',
+      lastActive: 'Just now',
+      lead: 'info@univenture.work',
+      isOnline: true,
+    ),
+    LiveSessionModel(
+      id: 'sess_2',
+      site: 'aipoweremail',
+      visitor: 'Visitor #8812',
+      started: '5m ago',
+      lastActive: '1m ago',
+      lead: 'Anonymous',
+      isOnline: true,
+    ),
+  ].obs;
 
   @override
   Widget build(BuildContext context) {
     final sharedController = Get.find<UserSharedController>();
-
-    final List<LiveEventItem> events = [
-      LiveEventItem(
-        icon: '💬',
-        title: 'New Chat Inquiry Started',
-        description: 'Anonymous #8f921 opened widget on /pricing',
-        time: 'Just now',
-        color: AppColors.primary,
-      ),
-      LiveEventItem(
-        icon: '🎯',
-        title: 'Lead Captured',
-        description: 'info@univenture.work requested Basic Plan details',
-        time: '2m ago',
-        color: AppColors.success,
-      ),
-      LiveEventItem(
-        icon: '🌐',
-        title: 'Visitor Arrived from Google',
-        description: 'New session started from United States on /dashboard',
-        time: '4m ago',
-        color: AppColors.secondary,
-      ),
-      LiveEventItem(
-        icon: '⚡',
-        title: 'Vector Search Query',
-        description: 'Retrieved 3 knowledge chunks (Pinecone: 38ms)',
-        time: '6m ago',
-        color: const Color(0xFFF59E0B),
-      ),
-      LiveEventItem(
-        icon: '⭐',
-        title: '5-Star Feedback Received',
-        description: 'Visitor #1092 rated response: "Accurate & Fast"',
-        time: '12m ago',
-        color: const Color(0xFFFBBF24),
-      ),
-    ];
 
     return Obx(() {
       final isDark = sharedController.isDarkMode.value;
@@ -87,7 +78,7 @@ class LiveActivityView extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
           title: Text(
-            'Live Activity Stream',
+            'Live Activity',
             style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -109,153 +100,326 @@ class LiveActivityView extends StatelessWidget {
           ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Live Active Users Card
-              CustomCard(
-                padding: const EdgeInsets.all(20),
-                backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                child: Row(
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
+              // Main Section Title (From Screenshot: "Live activity (active now)")
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Live activity (active now)',
+                    style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.successSoft,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-                              begin: const Offset(0.9, 0.9),
-                              end: const Offset(1.15, 1.15),
-                              duration: 1500.ms,
-                            ),
-                        Container(
-                          width: 44,
-                          height: 44,
+                          width: 6,
+                          height: 6,
                           decoration: const BoxDecoration(
                             color: AppColors.success,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.radar_rounded, color: Colors.white, size: 24),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            AnimatedStatCounter(
-                              value: 25,
-                              style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 26, fontWeight: FontWeight.w800),
+                        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                              begin: const Offset(0.8, 0.8),
+                              end: const Offset(1.3, 1.3),
+                              duration: 800.ms,
                             ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Active Visitors Right Now',
-                              style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
+                        const SizedBox(width: 5),
                         Text(
-                          'Streaming live across 3 deployed website widgets',
-                          style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 11),
+                          '${_sessions.length} Live',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.success,
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ).animate().fadeIn(duration: 400.ms),
-
-              const SizedBox(height: 20),
-
-              // Country Breakdown Chips
-              Text(
-                'Active Traffic Locations',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _buildLocationChip('🇺🇸 United States (12)', isDark),
-                  _buildLocationChip('🇬🇧 United Kingdom (5)', isDark),
-                  _buildLocationChip('🇵🇰 Pakistan (4)', isDark),
-                  _buildLocationChip('🇩🇪 Germany (2)', isDark),
-                  _buildLocationChip('🇨🇦 Canada (2)', isDark),
+                  ),
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              Text(
-                'Real-Time Telemetry Feed',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: events.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final event = events[index];
-
-                  return CustomCard(
-                    padding: const EdgeInsets.all(14),
-                    backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: event.color.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(event.icon, style: const TextStyle(fontSize: 18)),
+              // Live Sessions Table Card (From Screenshot)
+              CustomCard(
+                padding: const EdgeInsets.all(0),
+                backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Subtitle: "X active sessions"
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                      child: Text(
+                        '${_sessions.length} active sessions',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    event.title,
-                                    style: AppTextStyles.titleSmall(isDark: isDark).copyWith(fontWeight: FontWeight.bold, fontSize: 13),
-                                  ),
-                                  Text(
-                                    event.time,
-                                    style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 10),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                event.description,
-                                style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary, fontSize: 11),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ).animate().fadeIn(duration: 300.ms, delay: (index * 50).ms);
-                },
+
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                    ),
+
+                    // Table Columns Header Row (Site, Visitor, Started, Last active, Lead)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      color: isDark ? AppColors.darkSurface : AppColors.lightBackground.withValues(alpha: 0.5),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Site',
+                              style: _columnHeaderStyle(isDark),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Visitor',
+                              style: _columnHeaderStyle(isDark),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              'Started',
+                              style: _columnHeaderStyle(isDark),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              'Last active',
+                              style: _columnHeaderStyle(isDark),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Lead',
+                              style: _columnHeaderStyle(isDark),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                    ),
+
+                    // Table Body Rows (or "No active sessions.")
+                    if (_sessions.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                        child: Text(
+                          'No active sessions.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          ),
+                        ),
+                      )
+                    else
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _sessions.length,
+                        separatorBuilder: (context, index) => Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                        ),
+                        itemBuilder: (context, index) {
+                          final session = _sessions[index];
+
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            child: Row(
+                              children: [
+                                // Site
+                                Expanded(
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.language_rounded, size: 14, color: AppColors.primaryLight),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          session.site,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Visitor
+                                Expanded(
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 7,
+                                        height: 7,
+                                        decoration: const BoxDecoration(
+                                          color: AppColors.success,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          session.visitor,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Started
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    session.started,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                    ),
+                                  ),
+                                ),
+
+                                // Last Active
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    session.lastActive,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                    ),
+                                  ),
+                                ),
+
+                                // Lead Status
+                                Expanded(
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      if (session.lead != 'Anonymous') ...[
+                                        const Icon(Icons.check_circle_rounded, size: 13, color: AppColors.success),
+                                        const SizedBox(width: 4),
+                                      ],
+                                      Flexible(
+                                        child: Text(
+                                          session.lead,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: session.lead != 'Anonymous' ? FontWeight.w600 : FontWeight.normal,
+                                            color: session.lead != 'Anonymous'
+                                                ? AppColors.success
+                                                : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Action Toolbar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      PlatformHelper.lightHaptic();
+                      _sessions.clear();
+                    },
+                    icon: const Icon(Icons.clear_all_rounded, size: 16),
+                    label: const Text('Simulate Empty State', style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      side: BorderSide(
+                        color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      PlatformHelper.lightHaptic();
+                      final id = DateTime.now().millisecondsSinceEpoch;
+                      _sessions.insert(
+                        0,
+                        LiveSessionModel(
+                          id: 'sess_$id',
+                          site: 'Excels_Tech Widget',
+                          visitor: 'Visitor #$id'.substring(0, 14),
+                          started: 'Just now',
+                          lastActive: 'Just now',
+                          lead: id % 2 == 0 ? 'lead_$id@acme.io' : 'Anonymous',
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+                    label: const Text('Simulate New Live Visitor', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -264,18 +428,11 @@ class LiveActivityView extends StatelessWidget {
     });
   }
 
-  Widget _buildLocationChip(String label, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCard : AppColors.lightSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary, fontSize: 11, fontWeight: FontWeight.w600),
-      ),
+  TextStyle _columnHeaderStyle(bool isDark) {
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
     );
   }
 }
