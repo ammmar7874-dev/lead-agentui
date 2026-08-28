@@ -10,7 +10,7 @@ class CustomButton extends StatefulWidget {
   final bool isLoading;
   final bool isOutlined;
   final bool isSecondary;
-  final Widget? icon;
+  final dynamic icon;
   final double? width;
   final double height;
   final EdgeInsetsGeometry? padding;
@@ -159,25 +159,40 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                             color: Colors.white,
                             size: 22,
                           )
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (widget.icon != null) widget.icon!,
-                              if (widget.icon != null && widget.text.isNotEmpty)
-                                const SizedBox(width: 8),
-                              if (widget.text.isNotEmpty)
-                                Flexible(
-                                  child: Text(
-                                    widget.text,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTextStyles.labelLarge(
-                                      isDark: isDark,
-                                      color: txtColor,
+                        : Builder(
+                            builder: (context) {
+                              Widget? renderedIcon;
+                              if (widget.icon is Widget) {
+                                renderedIcon = widget.icon as Widget;
+                              } else if (widget.icon is IconData) {
+                                renderedIcon = Icon(
+                                  widget.icon as IconData,
+                                  size: 18,
+                                  color: txtColor,
+                                );
+                              }
+
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ?renderedIcon,
+                                  if (renderedIcon != null && widget.text.isNotEmpty)
+                                    const SizedBox(width: 8),
+                                  if (widget.text.isNotEmpty)
+                                    Flexible(
+                                      child: Text(
+                                        widget.text,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyles.labelLarge(
+                                          isDark: isDark,
+                                          color: txtColor,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                            ],
+                                ],
+                              );
+                            },
                           ),
                   ),
                 ),

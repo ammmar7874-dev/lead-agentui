@@ -5,6 +5,7 @@ import '../theme/app_text_styles.dart';
 class CustomTextField extends StatefulWidget {
   final String? label;
   final String? hint;
+  final String? hintText;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final bool isPassword;
@@ -24,6 +25,7 @@ class CustomTextField extends StatefulWidget {
     super.key,
     this.label,
     this.hint,
+    this.hintText,
     this.controller,
     this.validator,
     this.isPassword = false,
@@ -125,7 +127,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
             ),
             decoration: InputDecoration(
-              hintText: widget.hint,
+              hintText: widget.hint ?? widget.hintText,
               prefixIcon: widget.prefixIcon != null
                   ? IconTheme(
                       data: IconThemeData(
