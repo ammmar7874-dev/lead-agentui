@@ -339,7 +339,7 @@ class ChatView extends GetView<ChatController> {
           ),
 
           // Bottom Dropdowns & Input Bar
-          _buildBottomInputBar(isDark),
+          _buildBottomInputBar(isDark, isWide: isWide),
         ],
       );
     });
@@ -390,11 +390,11 @@ class ChatView extends GetView<ChatController> {
   }
 
   // ==========================================
-  // 4: BOTTOM BAR (DROPDOWNS + INPUT + SEND)
+  // 4: BOTTOM BAR (RESPONSIVE DROPDOWNS + INPUT + SEND)
   // ==========================================
-  Widget _buildBottomInputBar(bool isDark) {
+  Widget _buildBottomInputBar(bool isDark, {required bool isWide}) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+      padding: EdgeInsets.fromLTRB(16, isWide ? 10 : 8, 16, isWide ? 14 : 10),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         border: Border(
@@ -403,91 +403,183 @@ class ChatView extends GetView<ChatController> {
           ),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1: Source Mode Dropdown (Auto, Docs (RAG), Database, App Live)
-              _buildDropdownPicker(
-                value: controller.currentSourceMode.value,
-                items: controller.sourceModeOptions,
-                onChanged: (val) {
-                  if (val != null) controller.setSourceMode(val);
-                },
-                isDark: isDark,
+      child: isWide
+          ? _buildDesktopBottomRow(isDark)
+          : _buildMobileBottomColumn(isDark),
+    );
+  }
+
+  // Mobile / Narrow Bottom Layout (2-tier clean)
+  Widget _buildMobileBottomColumn(bool isDark) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Mode Selector Pills Row
+        Row(
+          children: [
+            _buildDropdownPicker(
+              value: controller.currentSourceMode.value,
+              items: controller.sourceModeOptions,
+              onChanged: (val) {
+                if (val != null) controller.setSourceMode(val);
+              },
+              isDark: isDark,
+              icon: Icons.layers_outlined,
+            ),
+            const SizedBox(width: 8),
+            _buildDropdownPicker(
+              value: controller.currentModelMode.value,
+              items: controller.modelModeOptions,
+              onChanged: (val) {
+                if (val != null) controller.setModelMode(val);
+              },
+              isDark: isDark,
+              icon: Icons.speed_rounded,
+            ),
+            const Spacer(),
+            if (controller.currentMessages.isNotEmpty)
+              IconButton(
+                icon: Icon(
+                  Icons.delete_sweep_outlined,
+                  size: 20,
+                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                ),
+                onPressed: controller.clearConversation,
+                tooltip: 'Clear messages',
               ),
-
-              const SizedBox(width: 8),
-
-              // 2: Model Mode Dropdown (Fast, Balanced, Best)
-              _buildDropdownPicker(
-                value: controller.currentModelMode.value,
-                items: controller.modelModeOptions,
-                onChanged: (val) {
-                  if (val != null) controller.setModelMode(val);
-                },
-                isDark: isDark,
-              ),
-
-              const SizedBox(width: 8),
-
-              // 3: Input Field
-              Expanded(
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
-                    ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // Full Width Input Box + Send Button
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
                   ),
-                  child: TextField(
-                    controller: controller.inputController,
-                    onSubmitted: (_) => controller.sendMessage(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                ),
+                child: TextField(
+                  controller: controller.inputController,
+                  onSubmitted: (_) => controller.sendMessage(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Ask a question about your knowledge base...',
+                    hintStyle: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                     ),
-                    decoration: InputDecoration(
-                      hintText: 'Ask a question about your knowledge base...',
-                      hintStyle: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      border: InputBorder.none,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    border: InputBorder.none,
                   ),
                 ),
               ),
-
-              const SizedBox(width: 8),
-
-              // 4: Send Button
-              SizedBox(
-                height: 40,
-                child: ElevatedButton.icon(
-                  onPressed: controller.sendMessage,
-                  icon: const Icon(Icons.send_rounded, size: 14, color: Colors.white),
-                  label: const Text(
-                    'Send',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 44,
+              child: ElevatedButton.icon(
+                onPressed: controller.sendMessage,
+                icon: const Icon(Icons.send_rounded, size: 15, color: Colors.white),
+                label: const Text(
+                  'Send',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Desktop / Wide Bottom Layout (Single row)
+  Widget _buildDesktopBottomRow(bool isDark) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildDropdownPicker(
+          value: controller.currentSourceMode.value,
+          items: controller.sourceModeOptions,
+          onChanged: (val) {
+            if (val != null) controller.setSourceMode(val);
+          },
+          isDark: isDark,
+          icon: Icons.layers_outlined,
+        ),
+        const SizedBox(width: 8),
+        _buildDropdownPicker(
+          value: controller.currentModelMode.value,
+          items: controller.modelModeOptions,
+          onChanged: (val) {
+            if (val != null) controller.setModelMode(val);
+          },
+          isDark: isDark,
+          icon: Icons.speed_rounded,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            height: 44,
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+              ),
+            ),
+            child: TextField(
+              controller: controller.inputController,
+              onSubmitted: (_) => controller.sendMessage(),
+              style: TextStyle(
+                fontSize: 13,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Ask a question about your knowledge base...',
+                hintStyle: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                border: InputBorder.none,
+              ),
+            ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          height: 44,
+          child: ElevatedButton.icon(
+            onPressed: controller.sendMessage,
+            icon: const Icon(Icons.send_rounded, size: 15, color: Colors.white),
+            label: const Text(
+              'Send',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -497,14 +589,15 @@ class ChatView extends GetView<ChatController> {
     required List<String> items,
     required ValueChanged<String?> onChanged,
     required bool isDark,
+    IconData? icon,
   }) {
     final validValue = items.contains(value) ? value : items.first;
 
     return Container(
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        color: isDark ? AppColors.darkCard : AppColors.lightBackground,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
@@ -513,12 +606,17 @@ class ChatView extends GetView<ChatController> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: validValue,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 18,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+          isDense: true,
+          icon: Padding(
+            padding: const EdgeInsets.only(left: 4),
+            child: Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 16,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            ),
           ),
-          dropdownColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+          dropdownColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+          borderRadius: BorderRadius.circular(10),
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -528,22 +626,24 @@ class ChatView extends GetView<ChatController> {
             final isSelected = item == validValue;
             return DropdownMenuItem<String>(
               value: item,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  item,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected
-                        ? Colors.white
-                        : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected
+                          ? AppColors.primaryLight
+                          : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                    ),
                   ),
-                ),
+                  if (isSelected) ...[
+                    const SizedBox(width: 6),
+                    const Icon(Icons.check_rounded, size: 14, color: AppColors.primaryLight),
+                  ],
+                ],
               ),
             );
           }).toList(),
