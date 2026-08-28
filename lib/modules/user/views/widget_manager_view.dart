@@ -71,25 +71,32 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Widget Manager',
-                style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18),
-              ),
-              Text(
-                'Manage embeddable widgets & multi-site configurations',
-                style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          title: Text(
+            'Widget Manager',
+            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.add_rounded,
+                size: 24,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
+              onPressed: () => _showNewSiteDialog(context, isDark),
+              tooltip: 'Add Site',
+            ),
+            const SizedBox(width: 8),
+          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),

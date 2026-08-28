@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_badge.dart';
 import '../../../widgets/custom_card.dart';
 import '../controllers/user_shared_controller.dart';
 
@@ -73,35 +72,32 @@ class _EscalationsViewState extends State<EscalationsView> {
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Escalations',
-                style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18),
-              ),
-              Text(
-                'Human handoff requests & support tickets queue',
-                style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          title: Text(
+            'Escalations',
+            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CustomBadge(
-                text: '${_escalations.length} Active',
-                backgroundColor: AppColors.errorSoft,
-                textColor: AppColors.error,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            IconButton(
+              icon: Icon(
+                Icons.refresh_rounded,
+                size: 22,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
+              onPressed: () {
+                Get.snackbar('Refreshed', 'Escalations queue synced', snackPosition: SnackPosition.BOTTOM);
+              },
             ),
+            const SizedBox(width: 8),
           ],
         ),
         body: SingleChildScrollView(

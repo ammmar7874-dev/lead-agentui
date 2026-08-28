@@ -28,28 +28,27 @@ class SyncJobsView extends StatelessWidget {
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Sync Jobs History',
-                style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18),
-              ),
-              Text(
-                'Background crawlers, PDF vectorization & sync status',
-                style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          title: Text(
+            'Sync Jobs History',
+            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.sync_rounded, color: AppColors.primaryLight),
+              icon: Icon(
+                Icons.sync_rounded,
+                size: 22,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
               onPressed: () {
                 PlatformHelper.lightHaptic();
                 if (knowledgeController.sources.isNotEmpty) {

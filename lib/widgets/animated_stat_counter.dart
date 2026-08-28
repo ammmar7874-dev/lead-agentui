@@ -37,13 +37,12 @@ class AnimatedStatCounter extends StatelessWidget {
             decimalDigits: decimalDigits,
           ).format(animatedValue).trim();
         } else {
-          formatted = NumberFormat.decimalPattern().format(animatedValue.round());
+          formatted = NumberFormat.decimalPattern().format(
+            animatedValue.round(),
+          );
         }
 
-        return Text(
-          '$prefix$formatted$suffix',
-          style: textStyle,
-        );
+        return Text('$prefix$formatted$suffix', style: textStyle);
       },
     );
   }

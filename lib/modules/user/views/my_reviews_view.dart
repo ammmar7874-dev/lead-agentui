@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_badge.dart';
 import '../../../widgets/custom_card.dart';
 import '../controllers/user_shared_controller.dart';
 
@@ -67,35 +66,33 @@ class _MyReviewsViewState extends State<MyReviewsView> {
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Quality Reviews',
-                style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18),
-              ),
-              Text(
-                'Human-in-the-loop response verification & Golden QA',
-                style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          title: Text(
+            'Quality Reviews',
+            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CustomBadge(
-                text: '1 Pending QA',
-                backgroundColor: AppColors.primarySoft,
-                textColor: AppColors.primaryLight,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            IconButton(
+              icon: Icon(
+                Icons.refresh_rounded,
+                size: 22,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
+              onPressed: () {
+                PlatformHelper.lightHaptic();
+                Get.snackbar('Refreshed', 'QA review queue synced', snackPosition: SnackPosition.BOTTOM);
+              },
             ),
+            const SizedBox(width: 8),
           ],
         ),
         body: ListView.separated(

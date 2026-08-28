@@ -77,10 +77,26 @@ class BotSettingsView extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Text('Bot Customization', style: AppTextStyles.titleMedium(isDark: isDark)),
+          title: Text('Bot Customization', style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.save_rounded,
+                size: 22,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
+              onPressed: controller.saveSettings,
+              tooltip: 'Save Settings',
+            ),
+            const SizedBox(width: 8),
+          ],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),

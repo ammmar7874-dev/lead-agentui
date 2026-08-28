@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_badge.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../controllers/user_shared_controller.dart';
 import 'bot_settings_view.dart';
@@ -64,101 +63,35 @@ class MainShellView extends GetView<UserSharedController> {
       scrolledUnderElevation: 0,
       leading: Builder(
         builder: (ctx) => IconButton(
-          icon: const Icon(Icons.menu_rounded, size: 24),
+          icon: Icon(
+            Icons.menu_rounded,
+            size: 24,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+          ),
           onPressed: () {
             PlatformHelper.lightHaptic();
             Scaffold.of(ctx).openDrawer();
           },
         ),
       ),
-      titleSpacing: 0,
-      title: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/bot_mascot.jpg',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.smart_toy_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'AI ChatBot Platform',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontSize: 14, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 1),
-              Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Bot Online • v2.4',
-                    style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                      fontSize: 10,
-                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+      title: Text(
+        'AI RAG ChatBot',
+        style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       actions: [
-        // Live Data Pulse Pill (Clickable -> LiveActivityView)
-        GestureDetector(
-          onTap: () {
-            PlatformHelper.lightHaptic();
-            Get.to(() => const LiveActivityView());
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: CustomBadge(
-              text: 'Live Data',
-              isPulsing: true,
-              backgroundColor: AppColors.successSoft,
-              textColor: AppColors.success,
-              borderColor: AppColors.success.withValues(alpha: 0.3),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              fontSize: 10,
-            ),
-          ),
-        ),
-        const SizedBox(width: 6),
-        // Theme toggle quick button
         IconButton(
           icon: Icon(
             controller.isDarkMode.value ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-            size: 20,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            size: 22,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
           ),
           onPressed: controller.toggleTheme,
           tooltip: 'Toggle Theme',
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 8),
       ],
     );
   }

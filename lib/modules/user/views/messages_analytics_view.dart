@@ -2,10 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_stat_counter.dart';
-import '../../../widgets/custom_badge.dart';
 import '../../../widgets/custom_card.dart';
 import '../controllers/user_shared_controller.dart';
 
@@ -33,35 +33,33 @@ class _MessagesAnalyticsViewState extends State<MessagesAnalyticsView> {
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 20,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            ),
             onPressed: () => Get.back(),
           ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Messages Telemetry',
-                style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18),
-              ),
-              Text(
-                'In-depth conversation & token exchange analytics',
-                style: AppTextStyles.bodySmall(isDark: isDark).copyWith(
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+          title: Text(
+            'Messages Analytics',
+            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: CustomBadge(
-                text: '168 Exchanged',
-                backgroundColor: AppColors.successSoft,
-                textColor: AppColors.success,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            IconButton(
+              icon: Icon(
+                Icons.refresh_rounded,
+                size: 22,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
+              onPressed: () {
+                PlatformHelper.lightHaptic();
+                Get.snackbar('Refreshed', 'Telemetry metrics updated', snackPosition: SnackPosition.BOTTOM);
+              },
             ),
+            const SizedBox(width: 8),
           ],
         ),
         body: SingleChildScrollView(
