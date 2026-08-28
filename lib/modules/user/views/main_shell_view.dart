@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
@@ -38,6 +39,7 @@ class MainShellView extends GetView<UserSharedController> {
       final currentTab = controller.currentTabIndex.value;
 
       return Scaffold(
+        extendBody: true,
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         drawer: _buildSideDrawer(context, authController, isDark),
         appBar: _buildTopAppBar(context, isDark),
@@ -51,7 +53,7 @@ class MainShellView extends GetView<UserSharedController> {
             ProfileView(),
           ],
         ),
-        bottomNavigationBar: _buildFloatingBottomBar(isDark),
+        bottomNavigationBar: currentTab == 1 ? null : _buildFloatingBottomBar(isDark),
       );
     });
   }
@@ -109,45 +111,46 @@ class MainShellView extends GetView<UserSharedController> {
   }
 
   Widget _buildFloatingBottomBar(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.transparent,
-            (isDark ? AppColors.darkBackground : AppColors.lightBackground).withValues(alpha: 0.8),
-            isDark ? AppColors.darkBackground : AppColors.lightBackground,
-          ],
-        ),
-      ),
+    return SafeArea(
+      top: false,
       child: Container(
-        height: 68,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface.withValues(alpha: 0.92) : AppColors.lightSurface.withValues(alpha: 0.95),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: isDark ? AppColors.darkBorder.withValues(alpha: 0.6) : AppColors.lightBorder,
-            width: 1.2,
-          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
+              color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.08),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(0, Icons.dashboard_rounded, Icons.dashboard_outlined, 'Dashboard', isDark),
-            _buildNavItem(1, Icons.chat_bubble_rounded, Icons.chat_bubble_outline_rounded, 'RAG Chat', isDark),
-            _buildNavItem(2, Icons.folder_special_rounded, Icons.folder_special_outlined, 'Sources', isDark),
-            _buildNavItem(3, Icons.people_alt_rounded, Icons.people_alt_outlined, 'Leads', isDark, badgeCount: 3),
-            _buildNavItem(4, Icons.settings_suggest_rounded, Icons.settings_suggest_outlined, 'Settings', isDark),
-          ],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: (isDark ? AppColors.darkSurface : AppColors.lightSurface).withValues(alpha: 0.78),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.06),
+                  width: 1.2,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(0, Icons.dashboard_rounded, Icons.dashboard_outlined, 'Dashboard', isDark),
+                  _buildNavItem(1, Icons.chat_bubble_rounded, Icons.chat_bubble_outline_rounded, 'RAG Chat', isDark),
+                  _buildNavItem(2, Icons.folder_special_rounded, Icons.folder_special_outlined, 'Sources', isDark),
+                  _buildNavItem(3, Icons.people_alt_rounded, Icons.people_alt_outlined, 'Leads', isDark, badgeCount: 3),
+                  _buildNavItem(4, Icons.settings_suggest_rounded, Icons.settings_suggest_outlined, 'Settings', isDark),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

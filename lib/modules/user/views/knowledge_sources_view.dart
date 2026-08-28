@@ -34,7 +34,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
             // Content Area based on selected sub-tab
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
