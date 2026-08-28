@@ -13,28 +13,43 @@ class OnboardingController extends GetxController {
 
   final List<OnboardingItem> items = const [
     OnboardingItem(
-      title: 'Train AI on Your ',
-      highlightWord: 'Knowledge Base',
+      stepNumber: '01 · AUTOMATION',
+      titlePrefix: 'AI Agents ',
+      titleSuffix: 'Do All Your Email Work',
+      subtitle: 'Autonomous Cold Outreach & Follow-Ups',
       description:
-          'Connect your website, PDF documents, FAQs, and APIs. Your chatbot retrieves precise answers instantly with RAG technology.',
-      imagePath: 'assets/images/onboarding_rag.jpg',
-      badgeText: '✨ RAG-POWERED AI',
+          'No more manual sending, forgotten follow-ups, or wasted hours. Your AI agents draft, validate & launch campaigns automatically.',
+      featureBadges: [
+        '⚡ 247+ Features',
+        '🔒 5-Step Validation Pipeline',
+      ],
+      mainIcon: Icons.mark_email_read_rounded,
     ),
     OnboardingItem(
-      title: 'Capture Leads & ',
-      highlightWord: 'Track Visitors',
+      stepNumber: '02 · RAG KNOWLEDGE',
+      titlePrefix: 'Instant Answers ',
+      titleSuffix: 'From Your Documents',
+      subtitle: 'Vectorized Pinecone Search & Real-time AI',
       description:
-          'Monitor live visitor sessions in real-time, qualify incoming inquiries automatically, and export high-intent leads effortlessly.',
-      imagePath: 'assets/images/onboarding_analytics.jpg',
-      badgeText: '📊 REAL-TIME ANALYTICS',
+          'Connect your knowledge base, APIs, and websites. Autonomous RAG indexes documents and answers customer queries in milliseconds.',
+      featureBadges: [
+        '🧠 OpenAI & Pinecone Hybrid RAG',
+        '⚡ 99.4% Retrieval Accuracy',
+      ],
+      mainIcon: Icons.auto_awesome_rounded,
     ),
     OnboardingItem(
-      title: 'Seamless Multi-Channel ',
-      highlightWord: 'Integration',
+      stepNumber: '03 · CONVERSIONS',
+      titlePrefix: 'Qualify Leads ',
+      titleSuffix: '& Convert 24/7',
+      subtitle: 'High-Intent Customer Handoff & Telemetry',
       description:
-          'One-line script embed for web, native mobile widgets, CRM integrations, and full bot customization with live preview.',
-      imagePath: 'assets/images/onboarding_integration.jpg',
-      badgeText: '⚡ OMNICHANNEL CHAT',
+          'Track live visitor telemetry, capture qualified buyer leads automatically, and export high-conversion CRM transcripts effortlessly.',
+      featureBadges: [
+        '📈 3.4x Higher Conversion Rate',
+        '🛡️ Enterprise PII Guardrails',
+      ],
+      mainIcon: Icons.bolt_rounded,
     ),
   ];
 

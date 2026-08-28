@@ -2,275 +2,501 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
-import '../../../theme/app_colors.dart';
-import '../../../theme/app_text_styles.dart';
-import '../../../widgets/custom_button.dart';
-import '../../../widgets/custom_textfield.dart';
+import '../../../widgets/custom_auth_background.dart';
+import '../../../widgets/custom_social_button.dart';
 import '../controllers/auth_controller.dart';
 
-class SignupView extends GetView<AuthController> {
+class SignupView extends StatefulWidget {
   const SignupView({super.key});
+
+  @override
+  State<SignupView> createState() => _SignupViewState();
+}
+
+class _SignupViewState extends State<SignupView> {
+  final AuthController controller = Get.find<AuthController>();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  String? _nameError;
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+
+  void _validateAndSignup() {
+    final name = controller.signupNameController.text.trim();
+    final email = controller.signupEmailController.text.trim();
+    final password = controller.signupPasswordController.text.trim();
+    final confirmPassword = controller.signupConfirmPasswordController.text.trim();
+
+    setState(() {
+      _nameError = name.isEmpty ? 'Please enter your name' : null;
+      _emailError = (email.isEmpty || !GetUtils.isEmail(email))
+          ? 'Please enter a valid work email'
+          : null;
+      _passwordError = password.length < 6
+          ? 'Password must be at least 6 characters'
+          : null;
+      _confirmPasswordError = password != confirmPassword
+          ? 'Passwords do not match'
+          : null;
+    });
+
+    if (_nameError == null &&
+        _emailError == null &&
+        _passwordError == null &&
+        _confirmPasswordError == null) {
+      controller.signup();
+    } else {
+      PlatformHelper.lightHaptic();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () {
-            PlatformHelper.lightHaptic();
-            Get.back();
-          },
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Text(
-                'Create Account',
-                style: AppTextStyles.displaySmall(isDark: true, color: Colors.white).copyWith(fontSize: 24),
-              ).animate().fadeIn(duration: 400.ms).moveY(begin: 10, end: 0),
-              const SizedBox(height: 4),
-              Text(
-                'Get started with your custom AI knowledge agent',
-                style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.darkTextSecondary),
-              ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
-
-              const SizedBox(height: 24),
-
-              // Social Sign Ups (Google & Apple)
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSocialButton(
-                      icon: Icons.g_mobiledata_rounded,
-                      label: 'Google',
-                      isGoogle: true,
-                      onPressed: () {
-                        PlatformHelper.lightHaptic();
-                        controller.signInWithGoogle();
-                      },
+      body: CustomAuthBackground(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Top Glowing Squircle App Icon
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF38BDF8), Color(0xFF6366F1)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialButton(
-                      icon: Icons.apple_rounded,
-                      label: 'Apple',
-                      onPressed: () {
-                        PlatformHelper.lightHaptic();
-                        controller.signInWithApple();
-                      },
-                    ),
-                  ),
-                ],
-              ).animate().fadeIn(duration: 400.ms, delay: 150.ms),
-
-              const SizedBox(height: 20),
-
-              // "OR SIGN UP WITH EMAIL" Divider
-              Row(
-                children: [
-                  const Expanded(child: Divider(color: AppColors.darkBorderSubtle, thickness: 1)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: Text(
-                      'OR SIGN UP WITH EMAIL',
-                      style: TextStyle(
-                        color: AppColors.darkTextMuted,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF38BDF8).withValues(alpha: 0.4),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
                       ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.mark_email_read_rounded,
+                      color: Colors.white,
+                      size: 34,
                     ),
                   ),
-                  const Expanded(child: Divider(color: AppColors.darkBorderSubtle, thickness: 1)),
-                ],
-              ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
+                )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(begin: const Offset(0.96, 0.96), end: const Offset(1.02, 1.02), duration: 2200.ms),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-              // Full Name
-              CustomTextField(
-                label: 'Name',
-                hint: 'Your full name',
-                controller: controller.signupNameController,
-                prefixIcon: const Icon(Icons.person_outline_rounded),
-              ).animate().fadeIn(duration: 400.ms, delay: 250.ms),
+                // Title & Subtitle
+                const Text(
+                  'Create Account',
+                  style: TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Inter',
+                  ),
+                ).animate().fadeIn(duration: 400.ms).moveY(begin: 10, end: 0),
 
-              const SizedBox(height: 14),
+                const SizedBox(height: 4),
 
-              // Email
-              CustomTextField(
-                label: 'Email',
-                hint: 'you@example.com',
-                controller: controller.signupEmailController,
-                keyboardType: TextInputType.emailAddress,
-                prefixIcon: const Icon(Icons.email_outlined),
-              ).animate().fadeIn(duration: 400.ms, delay: 300.ms),
+                const Text(
+                  'Get started with your AI Power Email account',
+                  style: TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
 
-              const SizedBox(height: 14),
+                const SizedBox(height: 22),
 
-              // Password
-              CustomTextField(
-                label: 'Password',
-                hint: 'Choose a strong password',
-                controller: controller.signupPasswordController,
-                isPassword: true,
-                prefixIcon: const Icon(Icons.lock_outline_rounded),
-              ).animate().fadeIn(duration: 400.ms, delay: 350.ms),
-
-              const SizedBox(height: 14),
-
-              // Confirm Password
-              CustomTextField(
-                label: 'Confirm Password',
-                hint: 'Re-enter your password',
-                controller: controller.signupConfirmPasswordController,
-                isPassword: true,
-                prefixIcon: const Icon(Icons.lock_reset_rounded),
-              ).animate().fadeIn(duration: 400.ms, delay: 400.ms),
-
-              const SizedBox(height: 16),
-
-              // Terms & Conditions Checkbox
-              Obx(
-                () => GestureDetector(
-                  onTap: () {
-                    PlatformHelper.lightHaptic();
-                    controller.acceptTerms.toggle();
-                  },
-                  child: Row(
+                // White Elevated Card Container
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.06),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                      BoxShadow(
+                        color: const Color(0xFF38BDF8).withValues(alpha: 0.08),
+                        blurRadius: 30,
+                        offset: const Offset(0, 16),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 22,
-                        height: 22,
+                      // Full Name
+                      const Text(
+                        'Full Name',
+                        style: TextStyle(color: Color(0xFF334155), fontSize: 12.5, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
                         decoration: BoxDecoration(
-                          color: controller.acceptTerms.value ? AppColors.primary : AppColors.darkCard,
-                          borderRadius: BorderRadius.circular(6),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: controller.acceptTerms.value ? AppColors.primary : AppColors.darkBorder,
+                            color: _nameError != null ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: controller.signupNameController,
+                          onChanged: (_) {
+                            if (_nameError != null) setState(() => _nameError = null);
+                          },
+                          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14, fontWeight: FontWeight.w500),
+                          decoration: const InputDecoration(
+                            hintText: 'John Doe',
+                            hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5),
+                            prefixIcon: Icon(Icons.person_outline_rounded, color: Color(0xFF475569), size: 19),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          ),
+                        ),
+                      ),
+                      if (_nameError != null) ...[
+                        const SizedBox(height: 4),
+                        Text(_nameError!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 11)),
+                      ],
+
+                      const SizedBox(height: 12),
+
+                      // Email
+                      const Text(
+                        'Email',
+                        style: TextStyle(color: Color(0xFF334155), fontSize: 12.5, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _emailError != null ? const Color(0xFFEF4444) : const Color(0xFF38BDF8),
                             width: 1.5,
                           ),
                         ),
-                        child: controller.acceptTerms.value
-                            ? const Icon(Icons.check, size: 16, color: Colors.white)
-                            : null,
+                        child: TextField(
+                          controller: controller.signupEmailController,
+                          keyboardType: TextInputType.emailAddress,
+                          onChanged: (_) {
+                            if (_emailError != null) setState(() => _emailError = null);
+                          },
+                          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14, fontWeight: FontWeight.w500),
+                          decoration: const InputDecoration(
+                            hintText: 'you@company.com',
+                            hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5),
+                            prefixIcon: Icon(Icons.mail_outline_rounded, color: Color(0xFF0EA5E9), size: 19),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'I agree to the Terms of Service & Privacy Policy',
-                          style: AppTextStyles.bodySmall(isDark: true, color: AppColors.darkTextSecondary),
+                      if (_emailError != null) ...[
+                        const SizedBox(height: 4),
+                        Text(_emailError!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 11)),
+                      ],
+
+                      const SizedBox(height: 12),
+
+                      // Password
+                      const Text(
+                        'Password',
+                        style: TextStyle(color: Color(0xFF334155), fontSize: 12.5, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _passwordError != null ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: controller.signupPasswordController,
+                          obscureText: _obscurePassword,
+                          onChanged: (_) {
+                            if (_passwordError != null) setState(() => _passwordError = null);
+                          },
+                          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14, fontWeight: FontWeight.w500),
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5),
+                            prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF475569), size: 19),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                color: const Color(0xFF64748B),
+                                size: 19,
+                              ),
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          ),
+                        ),
+                      ),
+                      if (_passwordError != null) ...[
+                        const SizedBox(height: 4),
+                        Text(_passwordError!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 11)),
+                      ],
+
+                      const SizedBox(height: 12),
+
+                      // Confirm Password
+                      const Text(
+                        'Confirm Password',
+                        style: TextStyle(color: Color(0xFF334155), fontSize: 12.5, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _confirmPasswordError != null ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: controller.signupConfirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          onChanged: (_) {
+                            if (_confirmPasswordError != null) setState(() => _confirmPasswordError = null);
+                          },
+                          style: const TextStyle(color: Color(0xFF0F172A), fontSize: 14, fontWeight: FontWeight.w500),
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13.5),
+                            prefixIcon: const Icon(Icons.lock_reset_rounded, color: Color(0xFF475569), size: 19),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                color: const Color(0xFF64748B),
+                                size: 19,
+                              ),
+                              onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          ),
+                        ),
+                      ),
+                      if (_confirmPasswordError != null) ...[
+                        const SizedBox(height: 4),
+                        Text(_confirmPasswordError!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 11)),
+                      ],
+
+                      const SizedBox(height: 14),
+
+                      // Terms & Conditions Checkbox
+                      Obx(
+                        () => GestureDetector(
+                          onTap: () {
+                            PlatformHelper.lightHaptic();
+                            controller.acceptTerms.toggle();
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: controller.acceptTerms.value ? const Color(0xFF38BDF8) : Colors.white,
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: controller.acceptTerms.value ? const Color(0xFF38BDF8) : const Color(0xFFCBD5E1),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: controller.acceptTerms.value
+                                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                                    : null,
+                              ),
+                              const SizedBox(width: 8),
+                              const Expanded(
+                                child: Text(
+                                  'I agree to the Terms of Service & Privacy Policy',
+                                  style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      // Create Account Button
+                      Obx(
+                        () => Container(
+                          width: double.infinity,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF38BDF8), Color(0xFF6366F1)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: controller.isLoading.value ? null : _validateAndSignup,
+                              child: Center(
+                                child: controller.isLoading.value
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.2),
+                                      )
+                                    : const Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Create Account',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.5,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 17),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ).animate().fadeIn(duration: 400.ms, delay: 450.ms),
+                ).animate().fadeIn(duration: 400.ms, delay: 150.ms).scale(begin: const Offset(0.98, 0.98)),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Create Account Button
-              Obx(
-                () => CustomButton(
-                  text: 'Create Account',
-                  isLoading: controller.isLoading.value,
-                  onPressed: controller.signup,
-                ),
-              ).animate().fadeIn(duration: 400.ms, delay: 500.ms).scale(begin: const Offset(0.95, 0.95)),
+                // "OR SIGN UP WITH" Divider
+                const Row(
+                  children: [
+                    Expanded(child: Divider(color: Color(0xFFCBD5E1), thickness: 1)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                      child: Text(
+                        'OR SIGN UP WITH',
+                        style: TextStyle(
+                          color: Color(0xFF64748B),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Color(0xFFCBD5E1), thickness: 1)),
+                  ],
+                ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
-              // Switch to Login
-              Center(
-                child: Row(
+                // Google & Apple Social Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomSocialButton(
+                        label: 'Google',
+                        isGoogle: true,
+                        onPressed: () {
+                          PlatformHelper.lightHaptic();
+                          controller.signInWithGoogle();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: CustomSocialButton(
+                        label: 'Apple',
+                        onPressed: () {
+                          PlatformHelper.lightHaptic();
+                          controller.signInWithApple();
+                        },
+                      ),
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 400.ms, delay: 250.ms),
+
+                const SizedBox(height: 20),
+
+                // Sign In Link
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Already have an account? ',
-                      style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.darkTextSecondary),
+                      style: TextStyle(color: Color(0xFF475569), fontSize: 13.5, fontWeight: FontWeight.w500),
                     ),
                     GestureDetector(
                       onTap: () {
                         PlatformHelper.lightHaptic();
                         Get.back();
                       },
-                      child: Text(
-                        'Sign In',
-                        style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.primaryLight)
-                            .copyWith(fontWeight: FontWeight.w700),
+                      child: const Row(
+                        children: [
+                          Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: Color(0xFF0EA5E9),
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(width: 3),
+                          Icon(Icons.arrow_forward_rounded, color: Color(0xFF0EA5E9), size: 14),
+                        ],
                       ),
                     ),
                   ],
-                ),
-              ).animate().fadeIn(duration: 400.ms, delay: 550.ms),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+                ).animate().fadeIn(duration: 400.ms, delay: 300.ms),
 
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-    bool isGoogle = false,
-  }) {
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: AppColors.darkCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.darkBorderSubtle, width: 1.2),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isGoogle)
-                Container(
-                  width: 22,
-                  height: 22,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+                const SizedBox(height: 14),
+
+                // Footer (Privacy Policy · Terms · Support)
+                const Text(
+                  'Privacy Policy   Terms   Support',
+                  style: TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
-                  child: const Text(
-                    'G',
-                    style: TextStyle(
-                      color: Color(0xFF4285F4),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                    ),
-                  ),
-                )
-              else
-                Icon(icon, color: Colors.white, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+                ).animate().fadeIn(duration: 400.ms, delay: 350.ms),
+              ],
+            ),
           ),
         ),
       ),
