@@ -68,7 +68,8 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
   List<WidgetSiteModel> get _filteredSites {
     final query = _searchController.text.trim().toLowerCase();
     return _sites.where((site) {
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           site.name.toLowerCase().contains(query) ||
           site.domain.toLowerCase().contains(query) ||
           site.publicId.toLowerCase().contains(query);
@@ -95,32 +96,39 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
       final isDark = sharedController.isDarkMode.value;
 
       return Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         appBar: AppBar(
-          backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.lightBackground,
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 20,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
             ),
             onPressed: () => Get.back(),
           ),
           title: Text(
             'Widget Manager',
-            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTextStyles.titleMedium(
+              isDark: isDark,
+            ).copyWith(fontSize: 17, fontWeight: FontWeight.w700),
           ),
           actions: [
             IconButton(
               icon: Icon(
                 Icons.add_rounded,
                 size: 24,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => _showNewSiteDialog(context, isDark),
               tooltip: 'Add Site',
@@ -144,29 +152,45 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.language_rounded, size: 20, color: AppColors.primaryLight),
+                      const Icon(
+                        Icons.language_rounded,
+                        size: 20,
+                        color: AppColors.primaryLight,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Widget Sites (${_sites.length})',
-                        style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppTextStyles.titleMedium(
+                          isDark: isDark,
+                        ).copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   ElevatedButton.icon(
                     onPressed: () => _showNewSiteDialog(context, isDark),
-                    icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+                    icon: const Icon(
+                      Icons.add_rounded,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                     label: const Text(
                       'New site',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
@@ -187,7 +211,8 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _filteredSites.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 14),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 14),
                   itemBuilder: (context, index) {
                     final site = _filteredSites[index];
                     return _buildSiteCard(context, site, isDark);
@@ -267,7 +292,9 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                  color: isDark
+                      ? AppColors.darkTextMuted
+                      : AppColors.lightTextMuted,
                 ),
               ),
               Icon(icon, size: 16, color: color),
@@ -279,13 +306,19 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF111827),
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : const Color(0xFF111827),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 10,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -301,10 +334,20 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
         TextField(
           controller: _searchController,
           onChanged: (_) => setState(() {}),
-          style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+          style: TextStyle(
+            fontSize: 13,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
           decoration: InputDecoration(
             hintText: 'Search site name, domain, or key...',
-            hintStyle: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+            hintStyle: TextStyle(
+              fontSize: 12,
+              color: isDark
+                  ? AppColors.darkTextMuted
+                  : AppColors.lightTextMuted,
+            ),
             prefixIcon: const Icon(Icons.search_rounded, size: 18),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
@@ -317,9 +360,26 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                 : null,
             filled: true,
             fillColor: isDark ? AppColors.darkCard : Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 10,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: isDark
+                    ? AppColors.darkBorderSubtle
+                    : const Color(0xFFE5E7EB),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: isDark
+                    ? AppColors.darkBorderSubtle
+                    : const Color(0xFFE5E7EB),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 10),
@@ -327,9 +387,17 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           children: [
             _buildFilterChip('all', 'All (${_sites.length})', isDark),
             const SizedBox(width: 8),
-            _buildFilterChip('active', 'Active (${_sites.where((s) => s.isActive.value).length})', isDark),
+            _buildFilterChip(
+              'active',
+              'Active (${_sites.where((s) => s.isActive.value).length})',
+              isDark,
+            ),
             const SizedBox(width: 8),
-            _buildFilterChip('inactive', 'Inactive (${_sites.where((s) => !s.isActive.value).length})', isDark),
+            _buildFilterChip(
+              'inactive',
+              'Inactive (${_sites.where((s) => !s.isActive.value).length})',
+              isDark,
+            ),
           ],
         ),
       ],
@@ -355,7 +423,9 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
-                : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                : (isDark
+                      ? AppColors.darkBorderSubtle
+                      : const Color(0xFFE5E7EB)),
           ),
         ),
         child: Text(
@@ -363,7 +433,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : (isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563)),
+            color: isSelected
+                ? Colors.white
+                : (isDark
+                      ? AppColors.darkTextSecondary
+                      : const Color(0xFF4B5563)),
           ),
         ),
       ),
@@ -373,14 +447,20 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
   // ==========================================
   // SITE CARD
   // ==========================================
-  Widget _buildSiteCard(BuildContext context, WidgetSiteModel site, bool isDark) {
+  Widget _buildSiteCard(
+    BuildContext context,
+    WidgetSiteModel site,
+    bool isDark,
+  ) {
     return Obx(() {
       final active = site.isActive.value;
 
       return CustomCard(
         padding: const EdgeInsets.all(18),
         backgroundColor: isDark ? AppColors.darkCard : Colors.white,
-        borderColor: active ? AppColors.primary.withValues(alpha: 0.4) : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+        borderColor: active
+            ? AppColors.primary.withValues(alpha: 0.4)
+            : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -392,10 +472,18 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                   height: 38,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: active ? AppColors.primarySoft : (isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6)),
+                    color: active
+                        ? AppColors.primarySoft
+                        : (isDark
+                              ? AppColors.darkSurface
+                              : const Color(0xFFF3F4F6)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.language_rounded, size: 20, color: active ? AppColors.primaryLight : Colors.grey),
+                  child: Icon(
+                    Icons.language_rounded,
+                    size: 20,
+                    color: active ? AppColors.primaryLight : Colors.grey,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -404,29 +492,41 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                     children: [
                       Text(
                         site.name,
-                        style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppTextStyles.titleMedium(
+                          isDark: isDark,
+                        ).copyWith(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         site.domain,
                         style: TextStyle(
                           fontSize: 11,
-                          color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : const Color(0xFF6B7280),
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: active ? const Color(0xFFDCFCE7) : (isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6)),
+                    color: active
+                        ? const Color(0xFFDCFCE7)
+                        : (isDark
+                              ? AppColors.darkSurface
+                              : const Color(0xFFF3F4F6)),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: active ? const Color(0xFF16A34A).withValues(alpha: 0.3) : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                      color: active
+                          ? const Color(0xFF16A34A).withValues(alpha: 0.3)
+                          : (isDark
+                                ? AppColors.darkBorderSubtle
+                                : const Color(0xFFE5E7EB)),
                     ),
                   ),
                   child: Row(
@@ -444,7 +544,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                       Text(
                         active ? 'Active' : 'Inactive',
                         style: TextStyle(
-                          color: active ? const Color(0xFF16A34A) : (isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280)),
+                          color: active
+                              ? const Color(0xFF16A34A)
+                              : (isDark
+                                    ? AppColors.darkTextMuted
+                                    : const Color(0xFF6B7280)),
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
@@ -462,22 +566,40 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
               onTap: () {
                 Clipboard.setData(ClipboardData(text: site.publicId));
                 PlatformHelper.lightHaptic();
-                Get.snackbar('Copied', 'Public Key copied to clipboard', snackPosition: SnackPosition.BOTTOM);
+                Get.snackbar(
+                  'Copied',
+                  'Public Key copied to clipboard',
+                  snackPosition: SnackPosition.BOTTOM,
+                );
               },
               borderRadius: BorderRadius.circular(8),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+                  color: isDark
+                      ? AppColors.darkBackground
+                      : const Color(0xFFF9FAFB),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.darkBorderSubtle
+                        : const Color(0xFFE5E7EB),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Public ID: ',
-                      style: TextStyle(color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280), fontSize: 11),
+                      style: TextStyle(
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : const Color(0xFF6B7280),
+                        fontSize: 11,
+                      ),
                     ),
                     Text(
                       site.publicId,
@@ -489,7 +611,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.copy_rounded, size: 12, color: AppColors.primaryLight),
+                    const Icon(
+                      Icons.copy_rounded,
+                      size: 12,
+                      color: AppColors.primaryLight,
+                    ),
                   ],
                 ),
               ),
@@ -500,14 +626,23 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             // Origins & Design Engine Info Badges
             Row(
               children: [
-                _buildInfoBadge(Icons.security_rounded, '${site.origins} Allowed Origins', isDark),
+                _buildInfoBadge(
+                  Icons.security_rounded,
+                  '${site.origins} Allowed Origins',
+                  isDark,
+                ),
                 const SizedBox(width: 10),
                 _buildInfoBadge(Icons.layers_outlined, site.design, isDark),
               ],
             ),
 
             const SizedBox(height: 16),
-            Divider(height: 1, color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? AppColors.darkBorderSubtle
+                  : const Color(0xFFE5E7EB),
+            ),
             const SizedBox(height: 12),
 
             // Action Toolbar
@@ -527,7 +662,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                   isPrimary: true,
                   onPressed: () {
                     PlatformHelper.lightHaptic();
-                    Get.snackbar('Published', '${site.name} design published live!', snackPosition: SnackPosition.BOTTOM);
+                    Get.snackbar(
+                      'Published',
+                      '${site.name} design published live!',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
                   },
                   isDark: isDark,
                 ),
@@ -536,12 +675,18 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                   label: 'Rotate Key',
                   onPressed: () {
                     PlatformHelper.lightHaptic();
-                    Get.snackbar('Key Rotated', 'New public key assigned to ${site.name}', snackPosition: SnackPosition.BOTTOM);
+                    Get.snackbar(
+                      'Key Rotated',
+                      'New public key assigned to ${site.name}',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
                   },
                   isDark: isDark,
                 ),
                 _buildActionBtn(
-                  icon: active ? Icons.power_settings_new_rounded : Icons.check_circle_outline_rounded,
+                  icon: active
+                      ? Icons.power_settings_new_rounded
+                      : Icons.check_circle_outline_rounded,
                   label: active ? 'Deactivate' : 'Activate',
                   color: active ? AppColors.error : const Color(0xFF16A34A),
                   onPressed: () {
@@ -562,7 +707,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 13, color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280)),
+        Icon(
+          icon,
+          size: 13,
+          color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+        ),
         const SizedBox(width: 4),
         Text(
           text,
@@ -588,20 +737,38 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
       icon: Icon(
         icon,
         size: 13,
-        color: color ?? (isPrimary ? AppColors.primaryLight : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937))),
+        color:
+            color ??
+            (isPrimary
+                ? AppColors.primaryLight
+                : (isDark
+                      ? AppColors.darkTextPrimary
+                      : const Color(0xFF1F2937))),
       ),
       label: Text(
         label,
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: color ?? (isPrimary ? AppColors.primaryLight : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937))),
+          color:
+              color ??
+              (isPrimary
+                  ? AppColors.primaryLight
+                  : (isDark
+                        ? AppColors.darkTextPrimary
+                        : const Color(0xFF1F2937))),
         ),
       ),
       style: OutlinedButton.styleFrom(
         backgroundColor: isPrimary ? AppColors.primarySoft : Colors.transparent,
         side: BorderSide(
-          color: color?.withValues(alpha: 0.5) ?? (isPrimary ? AppColors.primary.withValues(alpha: 0.5) : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+          color:
+              color?.withValues(alpha: 0.5) ??
+              (isPrimary
+                  ? AppColors.primary.withValues(alpha: 0.5)
+                  : (isDark
+                        ? AppColors.darkBorderSubtle
+                        : const Color(0xFFE5E7EB))),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -615,16 +782,27 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Column(
           children: [
-            Icon(Icons.search_off_rounded, size: 40, color: isDark ? AppColors.darkTextMuted : Colors.grey),
+            Icon(
+              Icons.search_off_rounded,
+              size: 40,
+              color: isDark ? AppColors.darkTextMuted : Colors.grey,
+            ),
             const SizedBox(height: 12),
             Text(
               'No widget sites found',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : Colors.black87),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: isDark ? AppColors.darkTextPrimary : Colors.black87,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               'Try changing your search query or filter chip',
-              style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : Colors.grey),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.darkTextMuted : Colors.grey,
+              ),
             ),
           ],
         ),
@@ -641,10 +819,14 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(
             'Add New Widget Site',
-            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyles.titleMedium(
+              isDark: isDark,
+            ).copyWith(fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -674,8 +856,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                     _sites.add(
                       WidgetSiteModel(
                         name: nameCtrl.text.trim(),
-                        domain: urlCtrl.text.isNotEmpty ? urlCtrl.text.trim() : 'custom.app',
-                        publicId: 'pub_${DateTime.now().millisecondsSinceEpoch}',
+                        domain: urlCtrl.text.isNotEmpty
+                            ? urlCtrl.text.trim()
+                            : 'custom.app',
+                        publicId:
+                            'pub_${DateTime.now().millisecondsSinceEpoch}',
                         origins: 1,
                         design: 'Production v1.2',
                         isActive: true,
@@ -683,7 +868,11 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                     );
                   });
                   Get.back();
-                  Get.snackbar('Success', 'New widget site added!', snackPosition: SnackPosition.BOTTOM);
+                  Get.snackbar(
+                    'Success',
+                    'New widget site added!',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -698,8 +887,13 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
     );
   }
 
-  void _showEmbedDialog(BuildContext context, WidgetSiteModel site, bool isDark) {
-    final snippet = '<script src="https://airagchatbot.com/widget.js" data-org="${site.publicId}"></script>';
+  void _showEmbedDialog(
+    BuildContext context,
+    WidgetSiteModel site,
+    bool isDark,
+  ) {
+    final snippet =
+        '<script src="https://airagchatbot.com/widget.js" data-org="${site.publicId}"></script>';
 
     showModalBottomSheet(
       context: context,
@@ -723,7 +917,9 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                       const SizedBox(width: 8),
                       Text(
                         'Widget Embed Code',
-                        style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
+                        style: AppTextStyles.titleMedium(
+                          isDark: isDark,
+                        ).copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -737,7 +933,9 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
               Text(
                 'Copy and paste this script right before the closing </body> tag on ${site.name}',
                 style: TextStyle(
-                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF4B5563),
+                  color: isDark
+                      ? AppColors.darkTextMuted
+                      : const Color(0xFF4B5563),
                   fontSize: 12,
                 ),
               ),
@@ -745,9 +943,15 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+                  color: isDark
+                      ? AppColors.darkBackground
+                      : const Color(0xFFF9FAFB),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.darkBorderSubtle
+                        : const Color(0xFFE5E7EB),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -762,10 +966,18 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.copy_rounded, color: AppColors.primaryLight, size: 20),
+                      icon: const Icon(
+                        Icons.copy_rounded,
+                        color: AppColors.primaryLight,
+                        size: 20,
+                      ),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: snippet));
-                        Get.snackbar('Copied', 'Embed snippet copied to clipboard', snackPosition: SnackPosition.BOTTOM);
+                        Get.snackbar(
+                          'Copied',
+                          'Embed snippet copied to clipboard',
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
                       },
                     ),
                   ],
