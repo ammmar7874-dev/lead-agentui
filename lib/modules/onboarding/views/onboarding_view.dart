@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
+import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_button.dart';
@@ -13,27 +14,12 @@ class OnboardingView extends GetView<OnboardingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          TextButton(
-            onPressed: () => controller.finishOnboarding(),
-            child: Text(
-              'Skip',
-              style: AppTextStyles.labelMedium(
-                isDark: true,
-                color: AppColors.darkTextMuted,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
-            // PageView with 3D Illustrations
+            const SizedBox(height: 12),
+
+            // PageView with 3D Illustrations & Content
             Expanded(
               child: PageView.builder(
                 controller: controller.pageController,
@@ -68,7 +54,7 @@ class OnboardingView extends GetView<OnboardingController> {
 
                         // 3D Illustration Card with Floating Animation
                         Container(
-                          height: 280,
+                          height: 260,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),
@@ -137,45 +123,76 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
 
-            // Bottom Navigation Controls
+            // Bottom Navigation Controls with Skip at Bottom
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              child: Row(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+              child: Column(
                 children: [
-                  // Animated Page Indicator Pills
-                  Obx(
-                    () => Row(
-                      children: List.generate(
-                        controller.items.length,
-                        (index) => AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.only(right: 6),
-                          height: 8,
-                          width: controller.currentPage.value == index ? 24 : 8,
-                          decoration: BoxDecoration(
-                            color: controller.currentPage.value == index
-                                ? AppColors.primary
-                                : AppColors.darkCard,
-                            borderRadius: BorderRadius.circular(4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Animated Page Indicator Pills
+                      Obx(
+                        () => Row(
+                          children: List.generate(
+                            controller.items.length,
+                            (index) => AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.only(right: 6),
+                              height: 8,
+                              width: controller.currentPage.value == index ? 24 : 8,
+                              decoration: BoxDecoration(
+                                color: controller.currentPage.value == index
+                                    ? AppColors.primary
+                                    : AppColors.darkCard,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+
+                      // Next / Get Started Button
+                      Obx(
+                        () => SizedBox(
+                          width: controller.isLastPage ? 160 : 60,
+                          height: 52,
+                          child: CustomButton(
+                            text: controller.isLastPage ? 'Get Started' : '',
+                            icon: controller.isLastPage
+                                ? const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18)
+                                : const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 18),
+                            onPressed: () {
+                              PlatformHelper.lightHaptic();
+                              controller.nextPage();
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const Spacer(),
+                  const SizedBox(height: 16),
 
-                  // Next / Get Started Button
+                  // Skip Button positioned cleanly at the bottom
                   Obx(
-                    () => SizedBox(
-                      width: controller.isLastPage ? 160 : 60,
-                      height: 52,
-                      child: CustomButton(
-                        text: controller.isLastPage ? 'Get Started' : '',
-                        icon: controller.isLastPage
-                            ? const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18)
-                            : const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 18),
-                        onPressed: controller.nextPage,
+                    () => AnimatedOpacity(
+                      opacity: controller.isLastPage ? 0.0 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: TextButton(
+                        onPressed: controller.isLastPage
+                            ? null
+                            : () {
+                                PlatformHelper.lightHaptic();
+                                controller.finishOnboarding();
+                              },
+                        child: Text(
+                          'Skip to Login',
+                          style: AppTextStyles.labelMedium(
+                            isDark: true,
+                            color: AppColors.darkTextMuted,
+                          ).copyWith(fontSize: 13),
+                        ),
                       ),
                     ),
                   ),

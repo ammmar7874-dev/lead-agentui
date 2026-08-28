@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_button.dart';
-import '../../../widgets/custom_card.dart';
 import '../../../widgets/custom_textfield.dart';
 import '../controllers/auth_controller.dart';
 
@@ -23,13 +23,13 @@ class LoginView extends GetView<AuthController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1: Top Hero Brand Header with 3D Bot Avatar
+                // Top Hero Brand Header with 3D Bot Avatar
                 Center(
                   child: Column(
                     children: [
                       Container(
-                        width: 84,
-                        height: 84,
+                        width: 76,
+                        height: 76,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
@@ -47,7 +47,7 @@ class LoginView extends GetView<AuthController> {
                             errorBuilder: (context, error, stackTrace) => const Icon(
                               Icons.smart_toy_rounded,
                               color: AppColors.primary,
-                              size: 48,
+                              size: 44,
                             ),
                           ),
                         ),
@@ -56,58 +56,72 @@ class LoginView extends GetView<AuthController> {
                           .moveY(begin: 0, end: -6, duration: 1800.ms, curve: Curves.easeInOut),
                       const SizedBox(height: 16),
                       Text(
-                        'AI RAG ChatBot',
-                        style: AppTextStyles.displaySmall(isDark: true, color: Colors.white),
+                        'AI ChatBot Platform',
+                        style: AppTextStyles.displaySmall(isDark: true, color: Colors.white).copyWith(fontSize: 24),
                       ).animate().fadeIn(duration: 400.ms).moveY(begin: 10, end: 0),
                       const SizedBox(height: 4),
                       Text(
-                        'Enterprise-grade conversational AI',
+                        'Sign in to manage your AI agents and knowledge base',
+                        textAlign: TextAlign.center,
                         style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.darkTextSecondary),
                       ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
 
-                // 2: Feature Bullets Card (From Web Screenshot)
-                CustomCard(
-                  padding: const EdgeInsets.all(14),
-                  backgroundColor: AppColors.darkCard.withValues(alpha: 0.7),
-                  child: Column(
-                    children: [
-                      _buildFeatureRow(
-                        icon: '🧠',
-                        title: 'RAG-powered answers from your documents',
+                // Social Logins (Google & Apple)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSocialButton(
+                        icon: Icons.g_mobiledata_rounded,
+                        label: 'Google',
+                        isGoogle: true,
+                        onPressed: () {
+                          PlatformHelper.lightHaptic();
+                          controller.signInWithGoogle();
+                        },
                       ),
-                      const Divider(height: 16, color: AppColors.darkBorderSubtle),
-                      _buildFeatureRow(
-                        icon: '📊',
-                        title: 'Real-time visitor analytics & lead capture',
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSocialButton(
+                        icon: Icons.apple_rounded,
+                        label: 'Apple',
+                        onPressed: () {
+                          PlatformHelper.lightHaptic();
+                          controller.signInWithApple();
+                        },
                       ),
-                      const Divider(height: 16, color: AppColors.darkBorderSubtle),
-                      _buildFeatureRow(
-                        icon: '🔒',
-                        title: 'Enterprise security with MFA & SSO',
-                      ),
-                    ],
-                  ),
-                ).animate().fadeIn(duration: 500.ms, delay: 150.ms).scale(begin: const Offset(0.96, 0.96)),
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 400.ms, delay: 150.ms),
 
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
 
-                // 3: Form Card
-                Text(
-                  'Welcome Back',
-                  style: AppTextStyles.titleLarge(isDark: true, color: Colors.white),
+                // "OR CONTINUE WITH EMAIL" Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider(color: AppColors.darkBorderSubtle, thickness: 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: Text(
+                        'OR CONTINUE WITH EMAIL',
+                        style: TextStyle(
+                          color: AppColors.darkTextMuted,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider(color: AppColors.darkBorderSubtle, thickness: 1)),
+                  ],
                 ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
-                const SizedBox(height: 4),
-                Text(
-                  'Login to access your bot workspace',
-                  style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.darkTextMuted),
-                ).animate().fadeIn(duration: 400.ms, delay: 250.ms),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 // Email Input
                 CustomTextField(
@@ -116,7 +130,7 @@ class LoginView extends GetView<AuthController> {
                   controller: controller.emailController,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: const Icon(Icons.email_outlined),
-                ).animate().fadeIn(duration: 400.ms, delay: 300.ms).moveX(begin: -10, end: 0),
+                ).animate().fadeIn(duration: 400.ms, delay: 250.ms).moveX(begin: -10, end: 0),
 
                 const SizedBox(height: 16),
 
@@ -127,7 +141,7 @@ class LoginView extends GetView<AuthController> {
                   controller: controller.passwordController,
                   isPassword: true,
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
-                ).animate().fadeIn(duration: 400.ms, delay: 350.ms).moveX(begin: -10, end: 0),
+                ).animate().fadeIn(duration: 400.ms, delay: 300.ms).moveX(begin: -10, end: 0),
 
                 const SizedBox(height: 8),
 
@@ -138,25 +152,25 @@ class LoginView extends GetView<AuthController> {
                     onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
                     child: Text(
                       'Forgot password?',
-                      style: AppTextStyles.bodySmall(isDark: true, color: AppColors.secondaryLight),
+                      style: AppTextStyles.bodySmall(isDark: true, color: AppColors.primaryLight),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 12),
 
-                // 4: Login Action Button
+                // Login Action Button
                 Obx(
                   () => CustomButton(
-                    text: 'Login',
+                    text: 'Sign In',
                     isLoading: controller.isLoading.value,
                     onPressed: controller.login,
                   ),
-                ).animate().fadeIn(duration: 400.ms, delay: 400.ms).scale(begin: const Offset(0.95, 0.95)),
+                ).animate().fadeIn(duration: 400.ms, delay: 350.ms).scale(begin: const Offset(0.95, 0.95)),
 
                 const SizedBox(height: 24),
 
-                // 5: Switch to Sign Up
+                // Switch to Sign Up
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -175,7 +189,7 @@ class LoginView extends GetView<AuthController> {
                       ),
                     ],
                   ),
-                ).animate().fadeIn(duration: 400.ms, delay: 450.ms),
+                ).animate().fadeIn(duration: 400.ms, delay: 400.ms),
               ],
             ),
           ),
@@ -184,29 +198,60 @@ class LoginView extends GetView<AuthController> {
     );
   }
 
-  Widget _buildFeatureRow({required String icon, required String title}) {
-    return Row(
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.darkSurface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.darkBorder, width: 0.8),
+  Widget _buildSocialButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    bool isGoogle = false,
+  }) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: AppColors.darkCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.darkBorderSubtle, width: 1.2),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isGoogle)
+                Container(
+                  width: 22,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text(
+                    'G',
+                    style: TextStyle(
+                      color: Color(0xFF4285F4),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                    ),
+                  ),
+                )
+              else
+                Icon(icon, color: Colors.white, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-          child: Text(icon, style: const TextStyle(fontSize: 16)),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            title,
-            style: AppTextStyles.bodyMedium(isDark: true, color: AppColors.darkTextPrimary)
-                .copyWith(fontSize: 13, fontWeight: FontWeight.w500),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

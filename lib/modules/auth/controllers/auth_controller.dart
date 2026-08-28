@@ -87,6 +87,62 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    isLoading.value = true;
+    PlatformHelper.mediumHaptic();
+    try {
+      await Future.delayed(const Duration(milliseconds: 900));
+      final user = UserModel(
+        id: 'google_user_${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Google User',
+        email: 'user.google@gmail.com',
+        role: 'ADMIN',
+        organizationName: 'Google Workspace RAG',
+        token: 'google_jwt_token_${DateTime.now().millisecondsSinceEpoch}',
+      );
+      currentUser.value = user;
+      await SecureStorageService.to.saveUserData(user.toJson());
+      await SecureStorageService.to.saveToken(user.token!);
+      await SecureStorageService.to.setIsLoggedIn(true);
+
+      PlatformHelper.heavyHaptic();
+      _showSnackbar('Welcome!', 'Signed in successfully with Google');
+      Get.offAllNamed(AppRoutes.dashboard);
+    } catch (e) {
+      _showSnackbar('Google Sign In Failed', e.toString(), isError: true);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    isLoading.value = true;
+    PlatformHelper.mediumHaptic();
+    try {
+      await Future.delayed(const Duration(milliseconds: 900));
+      final user = UserModel(
+        id: 'apple_user_${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Apple User',
+        email: 'user.apple@icloud.com',
+        role: 'ADMIN',
+        organizationName: 'Apple Workspace RAG',
+        token: 'apple_jwt_token_${DateTime.now().millisecondsSinceEpoch}',
+      );
+      currentUser.value = user;
+      await SecureStorageService.to.saveUserData(user.toJson());
+      await SecureStorageService.to.saveToken(user.token!);
+      await SecureStorageService.to.setIsLoggedIn(true);
+
+      PlatformHelper.heavyHaptic();
+      _showSnackbar('Welcome!', 'Signed in successfully with Apple');
+      Get.offAllNamed(AppRoutes.dashboard);
+    } catch (e) {
+      _showSnackbar('Apple Sign In Failed', e.toString(), isError: true);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> signup() async {
     final name = signupNameController.text.trim();
     final email = signupEmailController.text.trim();
