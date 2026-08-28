@@ -60,3 +60,28 @@ class ChatMessageModel {
     );
   }
 }
+
+class ChatSessionModel {
+  final String id;
+  String title;
+  DateTime updatedAt;
+  List<ChatMessageModel> messages;
+  String sourceMode;
+  String modelMode;
+  bool debugMode;
+
+  ChatSessionModel({
+    required this.id,
+    required this.title,
+    required this.updatedAt,
+    required this.messages,
+    this.sourceMode = 'Auto',
+    this.modelMode = 'Balanced',
+    this.debugMode = false,
+  });
+
+  String get lastMessagePreview {
+    if (messages.isEmpty) return 'Start a new conversation';
+    return messages.last.text;
+  }
+}
