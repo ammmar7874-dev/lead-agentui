@@ -14,44 +14,42 @@ class ChatView extends GetView<ChatController> {
   Widget build(BuildContext context) {
     final sharedController = Get.find<UserSharedController>();
 
-    return Obx(() {
-      final isDark = sharedController.isDarkMode.value;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 768;
 
-      return Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 768;
+        return Obx(() {
+          final isDark = sharedController.isDarkMode.value;
+          final isDetail = controller.isViewingChatDetail.value;
 
-            if (isWide) {
-              return Row(
-                children: [
-                  // Left Pane: Chat Sessions List
-                  SizedBox(
-                    width: 320,
-                    child: _buildSessionsListPane(isDark, isWide: true),
-                  ),
-                  VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
-                  ),
-                  // Right Pane: Active Chat Conversation
-                  Expanded(
-                    child: _buildChatConversationPane(isDark, isWide: true),
-                  ),
-                ],
-              );
-            }
-
-            // Mobile / Narrow Screen Navigation
-            return controller.isViewingChatDetail.value
-                ? _buildChatConversationPane(isDark, isWide: false)
-                : _buildSessionsListPane(isDark, isWide: false);
-          },
-        ),
-      );
-    });
+          return Scaffold(
+            backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+            body: isWide
+                ? Row(
+                    children: [
+                      // Left Master Pane: All Conversations List
+                      SizedBox(
+                        width: 320,
+                        child: _buildSessionsListPane(isDark, isWide: true),
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                      ),
+                      // Right Detail Pane: Active Chat Conversation
+                      Expanded(
+                        child: _buildChatConversationPane(isDark, isWide: true),
+                      ),
+                    ],
+                  )
+                : (isDetail
+                    ? _buildChatConversationPane(isDark, isWide: false)
+                    : _buildSessionsListPane(isDark, isWide: false)),
+          );
+        });
+      },
+    );
   }
 
   // ==========================================
@@ -62,14 +60,16 @@ class ChatView extends GetView<ChatController> {
       color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       child: Column(
         children: [
-          // Top Action Header (+ New Chat)
+          // Top Action Header (+ New Chat Button)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
             child: SizedBox(
               width: double.infinity,
               height: 42,
               child: ElevatedButton.icon(
-                onPressed: controller.createNewSession,
+                onPressed: () {
+                  controller.createNewSession();
+                },
                 icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
                 label: const Text(
                   'New Chat',
@@ -132,31 +132,56 @@ class ChatView extends GetView<ChatController> {
 
           const SizedBox(height: 6),
 
-          // List of Chat Sessions
+          // List of Chat Sessions (ListTiles)
           Expanded(
-            child: controller.filteredSessions.isEmpty
-                ? Center(
-                    child: Text(
-                      'No conversations found',
-                      style: TextStyle(
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                        fontSize: 12,
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    itemCount: controller.filteredSessions.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 4),
-                    itemBuilder: (context, index) {
-                      final session = controller.filteredSessions[index];
-                      final isSelected = isWide && session.id == controller.activeSessionId.value;
+            child: Obx(() {
+              final list = controller.filteredSessions;
 
-                      return Container(
+              if (list.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 32,
+                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'No conversations yet',
+                        style: TextStyle(
+                          color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                itemCount: list.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  final session = list[index];
+                  final isSelected = isWide && session.id == controller.activeSessionId.value;
+
+                  return Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {
+                        controller.selectSession(session.id);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primarySoft
-                              : (isDark ? Colors.transparent : Colors.transparent),
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: isSelected
@@ -164,51 +189,62 @@ class ChatView extends GetView<ChatController> {
                                 : Colors.transparent,
                           ),
                         ),
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                          leading: Icon(
-                            Icons.chat_bubble_outline_rounded,
-                            size: 18,
-                            color: isSelected
-                                ? AppColors.primaryLight
-                                : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                          ),
-                          title: Text(
-                            session.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline_rounded,
+                              size: 18,
                               color: isSelected
                                   ? AppColors.primaryLight
-                                  : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                                  : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
                             ),
-                          ),
-                          subtitle: Text(
-                            session.lastMessagePreview,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    session.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                      color: isSelected
+                                          ? AppColors.primaryLight
+                                          : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    session.lastMessagePreview,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              Icons.delete_outline_rounded,
-                              size: 16,
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                            IconButton(
+                              icon: Icon(
+                                Icons.delete_outline_rounded,
+                                size: 16,
+                                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              ),
+                              onPressed: () => controller.deleteSession(session.id),
+                              tooltip: 'Delete chat',
                             ),
-                            onPressed: () => controller.deleteSession(session.id),
-                            tooltip: 'Delete chat',
-                          ),
-                          onTap: () => controller.selectSession(session.id),
+                          ],
                         ),
-                      ).animate().fadeIn(duration: 200.ms, delay: (index * 30).ms);
-                    },
-                  ),
+                      ),
+                    ),
+                  ).animate().fadeIn(duration: 200.ms, delay: (index * 30).ms);
+                },
+              );
+            }),
           ),
         ],
       ),
@@ -219,92 +255,94 @@ class ChatView extends GetView<ChatController> {
   // 2: CHAT CONVERSATION DETAIL PANE
   // ==========================================
   Widget _buildChatConversationPane(bool isDark, {required bool isWide}) {
-    final active = controller.activeSession;
-    final messages = active?.messages ?? [];
+    return Obx(() {
+      final active = controller.activeSession;
+      final messages = active?.messages ?? [];
 
-    return Column(
-      children: [
-        // Top Header: Conversation Title & Debug Mode
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-            border: Border(
-              bottom: BorderSide(
-                color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+      return Column(
+        children: [
+          // Top Header: Back button (on mobile) + Active Title + Debug Mode Switch
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+              border: Border(
+                bottom: BorderSide(
+                  color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                ),
               ),
             ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  if (!isWide)
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 18,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    if (!isWide)
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 18,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                        ),
+                        onPressed: controller.backToSessionsList,
+                        tooltip: 'All Conversations',
                       ),
-                      onPressed: controller.backToSessionsList,
-                      tooltip: 'All Conversations',
+                    Text(
+                      active?.title ?? 'New Conversation',
+                      style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  Text(
-                    active?.title ?? 'New Conversation',
-                    style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              // Debug Mode Toggle
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Debug Mode',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Transform.scale(
-                    scale: 0.8,
-                    child: Switch(
-                      value: controller.debugMode.value,
-                      onChanged: (_) => controller.toggleDebugMode(),
-                      activeThumbColor: AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        // Middle: Message Stream or Empty State
-        Expanded(
-          child: messages.isEmpty
-              ? _buildEmptyConversationState(isDark)
-              : ListView.builder(
-                  controller: controller.scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final msg = messages[index];
-                    return _buildMessageBubble(msg, isDark);
-                  },
+                  ],
                 ),
-        ),
+                // Debug Mode Toggle
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Debug Mode',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Transform.scale(
+                      scale: 0.8,
+                      child: Switch(
+                        value: controller.debugMode.value,
+                        onChanged: (_) => controller.toggleDebugMode(),
+                        activeThumbColor: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-        // Bottom: Dropdown Pickers & Input Bar
-        _buildBottomInputBar(isDark),
-      ],
-    );
+          // Message Stream / Empty State
+          Expanded(
+            child: messages.isEmpty
+                ? _buildEmptyConversationState(isDark)
+                : ListView.builder(
+                    controller: controller.scrollController,
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = messages[index];
+                      return _buildMessageBubble(msg, isDark);
+                    },
+                  ),
+          ),
+
+          // Bottom Dropdowns & Input Bar
+          _buildBottomInputBar(isDark),
+        ],
+      );
+    });
   }
 
   // ==========================================
@@ -368,7 +406,6 @@ class ChatView extends GetView<ChatController> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Controls & Input Row
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -461,9 +498,11 @@ class ChatView extends GetView<ChatController> {
     required ValueChanged<String?> onChanged,
     required bool isDark,
   }) {
+    final validValue = items.contains(value) ? value : items.first;
+
     return Container(
       height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         borderRadius: BorderRadius.circular(8),
@@ -473,7 +512,7 @@ class ChatView extends GetView<ChatController> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: value,
+          value: validValue,
           icon: Icon(
             Icons.keyboard_arrow_down_rounded,
             size: 18,
@@ -486,7 +525,7 @@ class ChatView extends GetView<ChatController> {
             color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
           ),
           items: items.map((item) {
-            final isSelected = item == value;
+            final isSelected = item == validValue;
             return DropdownMenuItem<String>(
               value: item,
               child: Container(
