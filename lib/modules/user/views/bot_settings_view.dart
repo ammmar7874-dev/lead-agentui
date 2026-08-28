@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
 import '../../../theme/app_colors.dart';
@@ -42,7 +43,7 @@ class BotSettingsController extends GetxController {
 
   final RxString activeSubTab = 'customization'.obs;
 
-  // Customization Form State
+  // 1: Customization Form State
   final assistantNameController = TextEditingController(text: 'Support Team');
   final welcomeMessageController = TextEditingController(text: 'Hi! How can I help you today?');
   final RxString welcomeMode = 'Custom'.obs; // 'Templates' | 'Custom'
@@ -50,7 +51,7 @@ class BotSettingsController extends GetxController {
   final RxString selectedBotIcon = '🤖'.obs;
   final RxBool hasCustomIcon = false.obs;
 
-  // Live Test Chat State
+  // 2: Live Test Chat State
   final testInputController = TextEditingController();
   final ScrollController testScrollController = ScrollController();
   final RxList<Map<String, dynamic>> testMessages = <Map<String, dynamic>>[
@@ -61,6 +62,53 @@ class BotSettingsController extends GetxController {
     },
   ].obs;
   final RxBool isTestBotTyping = false.obs;
+
+  // 3: Quick Action Functionality Cards Data
+  late final List<QuickActionSiteGroup> quickActionGroups;
+
+  // 4: Integration State (Screenshot 1)
+  final String embedSnippet = '<script src="https://airagchatbot.com/widget.js" data-org="cmmqn8lrb0021gxkdt3yvr5um"></script>';
+  final String widgetApiKey = 'pub_cmmqn8lrb0021gxk';
+  final String widgetSiteName = 'Excels_Tech Widget';
+  final List<String> allowedWebsites = const [
+    'https://excelstech.ai', 'https://www.excelstech.ai', 'http://excelstech.ai',
+    'https://excelscrm.com', 'https://aicallsagent.com', 'https://www.excelscrm.com',
+    'http://excelscrm.com', 'https://www.aicallsagent.com', 'http://aicallsagent.com',
+    'https://aipoweremail.com', 'https://www.aipoweremail.com', 'http://aipoweremail.com',
+    'https://myleadsagent.com', 'https://www.myleadsagent.com', 'http://myleadsagent.com',
+    'https://excelsdigital.com', 'https://www.excelsdigital.com', 'http://excelsdigital.com',
+    'https://aisocialhubs.com', 'https://www.aisocialhubs.com', 'http://aisocialhubs.com',
+    'https://aidesignerly.com', 'https://www.aidesignerly.com', 'http://aidesignerly.com',
+    'https://aiwebsitesbuild.com', 'https://www.aiwebsitesbuild.com', 'http://aiwebsitesbuild.com',
+    'https://excelstechnology.com', 'https://www.excelstechnology.com', 'http://excelstechnology.com',
+    'https://airagchatbot.com', 'https://www.airagchatbot.com', 'http://airagchatbot.com',
+    'https://univenture.it.com', 'https://www.univenture.it.com', 'http://univenture.it.com',
+  ];
+
+  // 5: Notifications State (Screenshot 2)
+  final RxBool enableLeadNotifications = true.obs;
+  final notificationEmailController = TextEditingController(text: 'alerts@company.com');
+
+  // 6: Placement State (Screenshot 3)
+  final RxString selectedPosition = 'Bottom Right'.obs;
+  final List<String> positionOptions = const ['Bottom Right', 'Bottom Left', 'Top Right', 'Top Left'];
+  final zIndexController = TextEditingController(text: '9999');
+  final offsetXController = TextEditingController(text: '20');
+  final offsetYController = TextEditingController(text: '20');
+  final RxString selectedAutoOpenMode = 'Homepage Only'.obs;
+  final List<String> autoOpenOptions = const ['Homepage Only', 'All Pages', 'Disabled'];
+  final autoOpenDelayController = TextEditingController(text: '3000');
+  final hiddenPagesController = TextEditingController(
+    text: 'https://excelsdigital.com/login\nhttps://excelsdigital.com/hr\nhttps://aipoweremail.com/files\nhttps://aipoweremail.com/inbox',
+  );
+
+  // 7: Privacy State (Screenshot 4)
+  final privacyPolicyUrlController = TextEditingController(text: 'https://yoursite.com/privacy');
+  final visitorRetentionController = TextEditingController(text: '0');
+  final conversationRetentionController = TextEditingController(text: '0');
+  final transcriptRetentionController = TextEditingController(text: '365');
+  final RxBool enableTranscriptEmails = true.obs;
+  final RxBool requireOptInTranscripts = true.obs;
 
   // 24 Bot Icons Grid
   final List<String> availableBotIcons = const [
@@ -79,9 +127,6 @@ class BotSettingsController extends GetxController {
     '#F59E0B', // Amber
     '#111827', // Obsidian Black
   ];
-
-  // Quick Action Functionality Cards Data (From Screenshots 3, 4, 5)
-  late final List<QuickActionSiteGroup> quickActionGroups;
 
   @override
   void onInit() {
@@ -193,7 +238,46 @@ class BotSettingsController extends GetxController {
     PlatformHelper.mediumHaptic();
     Get.snackbar(
       'Configuration Saved',
-      'Bot customizations and quick action visibility synced live.',
+      'Bot customizations, quick actions, and integrations synced live.',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.success,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
+  void saveNotifications() {
+    PlatformHelper.mediumHaptic();
+    Get.snackbar(
+      'Notifications Saved',
+      'Lead alerts routed to ${notificationEmailController.text}',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.success,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
+  void savePlacement() {
+    PlatformHelper.mediumHaptic();
+    Get.snackbar(
+      'Placement Saved',
+      'Widget position updated to ${selectedPosition.value}',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColors.success,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+    );
+  }
+
+  void savePrivacy() {
+    PlatformHelper.mediumHaptic();
+    Get.snackbar(
+      'Privacy Settings Saved',
+      'Data retention policies updated successfully.',
       snackPosition: SnackPosition.TOP,
       backgroundColor: AppColors.success,
       colorText: Colors.white,
@@ -263,6 +347,16 @@ class BotSettingsController extends GetxController {
     welcomeMessageController.dispose();
     testInputController.dispose();
     testScrollController.dispose();
+    notificationEmailController.dispose();
+    zIndexController.dispose();
+    offsetXController.dispose();
+    offsetYController.dispose();
+    autoOpenDelayController.dispose();
+    hiddenPagesController.dispose();
+    privacyPolicyUrlController.dispose();
+    visitorRetentionController.dispose();
+    conversationRetentionController.dispose();
+    transcriptRetentionController.dispose();
     super.onClose();
   }
 }
@@ -329,10 +423,10 @@ class BotSettingsView extends StatelessWidget {
                     if (activeTab == 'customization') _buildCustomizationTab(controller, isDark),
                     if (activeTab == 'test_bot') _buildTestBotTab(controller, isDark),
                     if (activeTab == 'quick_actions') _buildQuickActionsTab(controller, isDark),
-                    if (activeTab == 'integration') _buildPlaceholderTab('Integration', 'Embed code snippet, API credentials & multi-site whitelist origins.', Icons.code_rounded, isDark),
-                    if (activeTab == 'notifications') _buildPlaceholderTab('Notifications', 'Email alerts, Webhooks, Slack & Discord CRM leads notification routing.', Icons.mail_outline_rounded, isDark),
-                    if (activeTab == 'placement') _buildPlaceholderTab('Placement', 'Floating bubble position, automatic pop-up trigger delay & custom CSS styles.', Icons.layers_outlined, isDark),
-                    if (activeTab == 'privacy') _buildPlaceholderTab('Privacy & Compliance', 'GDPR consent banners, IP masking & session privacy controls.', Icons.security_outlined, isDark),
+                    if (activeTab == 'integration') _buildIntegrationTab(controller, isDark),
+                    if (activeTab == 'notifications') _buildNotificationsTab(controller, isDark),
+                    if (activeTab == 'placement') _buildPlacementTab(controller, isDark),
+                    if (activeTab == 'privacy') _buildPrivacyTab(controller, isDark),
                   ],
                 ),
               ),
@@ -953,7 +1047,7 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 3: TAB 2 - TEST YOUR BOT (SCREENSHOT 2)
+  // 3: TAB 2 - TEST YOUR BOT
   // ==========================================
   Widget _buildTestBotTab(BotSettingsController controller, bool isDark) {
     return LayoutBuilder(
@@ -977,7 +1071,7 @@ class BotSettingsView extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             child: Column(
               children: [
-                // Top Header (Screenshot 2: Red header with Online & Reset icon)
+                // Top Header (Red header with Online & Reset icon)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   color: controller.currentColor,
@@ -1183,13 +1277,12 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 4: TAB 3 - QUICK ACTIONS (SCREENSHOTS 3, 4, 5)
+  // 4: TAB 3 - QUICK ACTIONS
   // ==========================================
   Widget _buildQuickActionsTab(BotSettingsController controller, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Heading & Subtitle (From Screenshot 3)
         Text(
           'Quick Actions (functionality cards)',
           style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
@@ -1209,7 +1302,6 @@ class BotSettingsView extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // List of Website Groups
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -1221,7 +1313,6 @@ class BotSettingsView extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Site Header with Globe icon and "X/Y shown" count
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1262,7 +1353,6 @@ class BotSettingsView extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // Functionality Cards in Group
                 Container(
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkCard : Colors.white,
@@ -1360,9 +1450,238 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 5: PLACEHOLDER SUB-TABS (READY FOR UPCOMING OPTIONS)
+  // 5: TAB 4 - INTEGRATION (SCREENSHOT 1)
   // ==========================================
-  Widget _buildPlaceholderTab(String title, String description, IconData icon, bool isDark) {
+  Widget _buildIntegrationTab(BotSettingsController controller, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1: Widget Embed Code Card
+        CustomCard(
+          padding: const EdgeInsets.all(20),
+          backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('📑', style: TextStyle(fontSize: 18)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Widget Embed Code',
+                    style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Copy and paste this code just before the closing </body> tag in your website\'s index.html file. The key is already included — just copy and paste!',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Metadata Row: Active Badge, Site, Key
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF16A34A),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Active',
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Site: ${controller.widgetSiteName}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Key: ${controller.widgetApiKey}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 14),
+
+              // Code Snippet Box with Copy Button
+              Container(
+                padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SelectableText(
+                        controller.embedSnippet,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: controller.embedSnippet));
+                        PlatformHelper.lightHaptic();
+                        Get.snackbar('Copied', 'Widget embed snippet copied to clipboard', snackPosition: SnackPosition.BOTTOM);
+                      },
+                      icon: const Icon(Icons.copy_rounded, size: 14, color: Color(0xFF4B5563)),
+                      label: const Text('Copy', style: TextStyle(fontSize: 12, color: Color(0xFF4B5563), fontWeight: FontWeight.w600)),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Allowed Websites Section
+              Row(
+                children: [
+                  const Text('🌐', style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Allowed Websites',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                    ),
+                  ),
+                  Text(
+                    ' — added automatically when you crawl a website',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // Domain Pill Badges
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: controller.allowedWebsites.map((url) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                    ),
+                    child: Text(
+                      url,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 12),
+              Text(
+                'This widget works on all of your organization\'s crawled websites — one script, everywhere. No manual setup needed.',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // 2: Installation Steps Card
+        CustomCard(
+          padding: const EdgeInsets.all(20),
+          backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text('🔧', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Installation Steps',
+                    style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildStepItem('1', 'Copy the script tag above (key is already included!)', isDark),
+              _buildStepItem('2', 'Open your website\'s index.html file', isDark),
+              _buildStepItem('3', 'Paste the code inside the <body> tag (before </body>)', isDark),
+              _buildStepItem('4', 'Save and refresh your website', isDark),
+              _buildStepItem('5', 'The chat widget will appear in the bottom-right corner 🎉', isDark),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepItem(String num, String text, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$num. ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // 6: TAB 5 - NOTIFICATIONS (SCREENSHOT 2)
+  // ==========================================
+  Widget _buildNotificationsTab(BotSettingsController controller, bool isDark) {
     return CustomCard(
       padding: const EdgeInsets.all(24),
       backgroundColor: isDark ? AppColors.darkCard : Colors.white,
@@ -1371,45 +1690,480 @@ class BotSettingsView extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 24, color: AppColors.primaryLight),
-              const SizedBox(width: 10),
+              const Text('📧', style: TextStyle(fontSize: 18)),
+              const SizedBox(width: 8),
               Text(
-                title,
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
+                'Lead Notification Email',
+                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
+
+          // Order/Lead Email Notifications Toggle
           Text(
-            description,
+            'Order/Lead Email Notifications',
             style: TextStyle(
-              fontSize: 13,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              height: 1.5,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
             ),
           ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : AppColors.lightBackground,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-            ),
-            child: Row(
+          const SizedBox(height: 8),
+          Obx(() {
+            final isEnabled = controller.enableLeadNotifications.value;
+
+            return Row(
               children: [
-                const Icon(Icons.info_outline_rounded, size: 18, color: AppColors.primaryLight),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Options configured and synced with live embed widget instances.',
-                    style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                Transform.scale(
+                  scale: 0.85,
+                  child: Switch(
+                    value: isEnabled,
+                    onChanged: (val) => controller.enableLeadNotifications.value = val,
+                    activeTrackColor: const Color(0xFF0284C7),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  isEnabled ? '✅ ON — Emails will be sent when orders/leads are captured' : 'OFF — No email alerts',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isEnabled ? const Color(0xFF16A34A) : (isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280)),
                   ),
                 ),
               ],
+            );
+          }),
+
+          const SizedBox(height: 20),
+
+          // Email Address Input
+          Text(
+            'Email Address',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: controller.notificationEmailController,
+            style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+            decoration: InputDecoration(
+              hintText: 'alerts@company.com',
+              filled: true,
+              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Receive an email whenever a new lead is captured',
+            style: TextStyle(
+              fontSize: 11,
+              color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Save Button
+          SizedBox(
+            width: 100,
+            height: 38,
+            child: ElevatedButton(
+              onPressed: controller.saveNotifications,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0284C7),
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
+              child: const Text('Save', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // 7: TAB 6 - PLACEMENT (SCREENSHOT 3)
+  // ==========================================
+  Widget _buildPlacementTab(BotSettingsController controller, bool isDark) {
+    return CustomCard(
+      padding: const EdgeInsets.all(24),
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('📐', style: TextStyle(fontSize: 18)),
+              const SizedBox(width: 8),
+              Text(
+                'Widget Placement',
+                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Row 1: Position & Z-Index
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Position', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    Obx(
+                      () => Container(
+                        height: 42,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: _dropdownContainerDecoration(isDark),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: controller.selectedPosition.value,
+                            isExpanded: true,
+                            dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                            items: controller.positionOptions.map((pos) {
+                              return DropdownMenuItem<String>(value: pos, child: Text(pos, style: const TextStyle(fontSize: 13)));
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) controller.selectedPosition.value = val;
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Z-Index', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.zIndexController, isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Row 2: Offset X & Offset Y
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Offset X (px)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.offsetXController, isDark),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Offset Y (px)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.offsetYController, isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Row 3: Auto-Open Mode & Auto-Open Delay
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Auto-Open Mode', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    Obx(
+                      () => Container(
+                        height: 42,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: _dropdownContainerDecoration(isDark),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: controller.selectedAutoOpenMode.value,
+                            isExpanded: true,
+                            dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                            items: controller.autoOpenOptions.map((opt) {
+                              return DropdownMenuItem<String>(value: opt, child: Text(opt, style: const TextStyle(fontSize: 13)));
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) controller.selectedAutoOpenMode.value = val;
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Auto-Open Delay (ms)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.autoOpenDelayController, isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Row 4: Hide widget on these pages
+          Row(
+            children: [
+              const Text('🚫', style: TextStyle(fontSize: 14)),
+              const SizedBox(width: 6),
+              Text(
+                'Hide widget on these pages (internal panels)',
+                style: _formLabelStyle(isDark),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller.hiddenPagesController,
+            maxLines: 4,
+            style: TextStyle(fontSize: 12, fontFamily: 'monospace', color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+              contentPadding: const EdgeInsets.all(12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'One per line. The widget won\'t load on these pages — great for post-login user panels/dashboards. Use a path like /dashboard (hides that page and everything under it, on every site), or a domain like app.yoursite.com (hides that whole site/subdomain). Public pages keep showing the widget. No website code changes needed.',
+            style: TextStyle(
+              fontSize: 11,
+              height: 1.4,
+              color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Save Placement Button
+          SizedBox(
+            width: 140,
+            height: 38,
+            child: ElevatedButton(
+              onPressed: controller.savePlacement,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0284C7),
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
+              child: const Text('Save Placement', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // 8: TAB 7 - PRIVACY (SCREENSHOT 4)
+  // ==========================================
+  Widget _buildPrivacyTab(BotSettingsController controller, bool isDark) {
+    return CustomCard(
+      padding: const EdgeInsets.all(24),
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🔒', style: TextStyle(fontSize: 18)),
+              const SizedBox(width: 8),
+              Text(
+                'Privacy & Data Retention',
+                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Row 1: Privacy Policy URL & Visitor Retention
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Privacy Policy URL', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.privacyPolicyUrlController, isDark),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Visitor Retention (days, 0 = forever)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.visitorRetentionController, isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Row 2: Conversation Retention & Transcript Retention
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Conversation Retention (days, 0 = forever)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.conversationRetentionController, isDark),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Transcript Retention (days)', style: _formLabelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.transcriptRetentionController, isDark),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Row 3: Enable Transcript Emails
+          Text('Enable Transcript Emails', style: _formLabelStyle(isDark)),
+          const SizedBox(height: 6),
+          Obx(
+            () => Transform.scale(
+              scale: 0.85,
+              child: Switch(
+                value: controller.enableTranscriptEmails.value,
+                onChanged: (val) => controller.enableTranscriptEmails.value = val,
+                activeTrackColor: const Color(0xFF0284C7),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // Row 4: Require Opt-In for Transcripts
+          Text('Require Opt-In for Transcripts', style: _formLabelStyle(isDark)),
+          const SizedBox(height: 6),
+          Obx(
+            () => Transform.scale(
+              scale: 0.85,
+              child: Switch(
+                value: controller.requireOptInTranscripts.value,
+                onChanged: (val) => controller.requireOptInTranscripts.value = val,
+                activeTrackColor: const Color(0xFF0284C7),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Save Privacy Settings Button
+          SizedBox(
+            width: 170,
+            height: 38,
+            child: ElevatedButton(
+              onPressed: controller.savePrivacy,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0284C7),
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
+              child: const Text('Save Privacy Settings', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // HELPERS
+  // ==========================================
+  TextStyle _formLabelStyle(bool isDark) {
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
+    );
+  }
+
+  BoxDecoration _dropdownContainerDecoration(bool isDark) {
+    return BoxDecoration(
+      color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+    );
+  }
+
+  Widget _buildSettingsTextField(TextEditingController ctrl, bool isDark) {
+    return SizedBox(
+      height: 42,
+      child: TextField(
+        controller: ctrl,
+        style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+        ),
       ),
     );
   }
