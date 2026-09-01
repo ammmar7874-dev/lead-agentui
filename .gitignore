@@ -1,6 +1,10 @@
 # Miscellaneous
 *.class
 *.log
+hs_err_*.log
+replay_*.log
+*.dump
+*.stackdump
 *.pyc
 *.swp
 .DS_Store

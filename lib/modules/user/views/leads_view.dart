@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/native/platform_helper.dart';
+import '../../../core/responsive/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_badge.dart';
@@ -119,74 +120,82 @@ class LeadsView extends StatelessWidget {
       return Scaffold(
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header Summary Card
-              _buildSummaryHeader(controller, isDark),
+          padding: EdgeInsets.fromLTRB(
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            Responsive.value(context, mobile: 12, tablet: 18, desktop: 24),
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            Responsive.isMobile(context) ? 110 : 40,
+          ),
+          child: ResponsiveContainer(
+            maxWidth: 1400,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Summary Card
+                _buildSummaryHeader(controller, isDark),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-              // Search Bar & Export Button
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: controller.searchController,
-                        onChanged: (_) => controller.allLeads.refresh(),
-                        style: TextStyle(
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          fontSize: 13,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Search by lead name, email...',
-                          hintStyle: TextStyle(
-                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                            fontSize: 12,
+                // Search Bar & Export Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                           ),
-                          prefixIcon: const Icon(Icons.search_rounded, size: 18),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          filled: false,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: TextField(
+                          controller: controller.searchController,
+                          onChanged: (_) => controller.allLeads.refresh(),
+                          style: TextStyle(
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                            fontSize: 13,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Search by lead name, email, or service...',
+                            hintStyle: TextStyle(
+                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              fontSize: 12,
+                            ),
+                            prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            filled: false,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: controller.exportLeads,
-                    icon: const Icon(Icons.download_rounded, size: 16),
-                    label: const Text('Export', style: TextStyle(fontSize: 12)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: controller.exportLeads,
+                      icon: const Icon(Icons.download_rounded, size: 16),
+                      label: const Text('Export CSV', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-              // Filter Chips (ALL, NEW, QUALIFIED, IN_PROGRESS, CLOSED)
-              _buildFilterChips(controller, isDark),
+                // Filter Chips (ALL, NEW, QUALIFIED, IN_PROGRESS, CLOSED)
+                _buildFilterChips(controller, isDark),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-              // Filtered Leads List
-              _buildLeadsList(controller, isDark),
-            ],
+                // Filtered Leads List/Grid
+                _buildResponsiveLeadsList(controller, isDark),
+              ],
+            ),
           ),
         ),
       );
@@ -195,7 +204,7 @@ class LeadsView extends StatelessWidget {
 
   Widget _buildSummaryHeader(LeadsViewController controller, bool isDark) {
     return CustomCard(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
       borderColor: AppColors.primary.withValues(alpha: 0.3),
       child: Row(
@@ -214,12 +223,12 @@ class LeadsView extends StatelessWidget {
   Widget _buildLeadStatPill(String title, String val, Color color, bool isDark) {
     return Column(
       children: [
-        Text(val, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(val, style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 2),
         Text(
           title,
           style: TextStyle(
-            fontSize: 9,
+            fontSize: 10,
             letterSpacing: 0.5,
             fontWeight: FontWeight.w600,
             color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
@@ -238,7 +247,7 @@ class LeadsView extends StatelessWidget {
         children: filters.map((f) {
           final isSelected = controller.selectedFilter.value == f;
           return Padding(
-            padding: const EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
               label: Text(
                 f.replaceAll('_', ' '),
@@ -265,7 +274,7 @@ class LeadsView extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadsList(LeadsViewController controller, bool isDark) {
+  Widget _buildResponsiveLeadsList(LeadsViewController controller, bool isDark) {
     final leads = controller.filteredLeads;
 
     if (leads.isEmpty) {
@@ -283,14 +292,41 @@ class LeadsView extends StatelessWidget {
       );
     }
 
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: leads.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final lead = leads[index];
-        return _buildLeadCard(lead, isDark);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = 1;
+        if (constraints.maxWidth >= 900) {
+          crossAxisCount = 2;
+        }
+
+        if (crossAxisCount == 1) {
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: leads.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final lead = leads[index];
+              return _buildLeadCard(lead, isDark);
+            },
+          );
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            mainAxisExtent: 170,
+          ),
+          itemCount: leads.length,
+          itemBuilder: (context, index) {
+            final lead = leads[index];
+            return _buildLeadCard(lead, isDark);
+          },
+        );
       },
     );
   }
@@ -307,6 +343,7 @@ class LeadsView extends StatelessWidget {
       borderColor: statusColor.withValues(alpha: 0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -330,6 +367,7 @@ class LeadsView extends StatelessWidget {
                         children: [
                           Text(
                             lead.name,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.titleSmall(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 2),
@@ -343,6 +381,7 @@ class LeadsView extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               CustomBadge(
                 text: lead.status,
                 backgroundColor: statusColor.withValues(alpha: 0.15),
@@ -352,9 +391,7 @@ class LeadsView extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(height: 12, color: AppColors.darkBorderSubtle),
-          const SizedBox(height: 6),
+          const Divider(height: 14, color: AppColors.darkBorderSubtle),
 
           // Lead Attributes
           Row(
@@ -373,7 +410,7 @@ class LeadsView extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: isDark ? AppColors.darkSurface : AppColors.lightCardHover,
                   borderRadius: BorderRadius.circular(10),

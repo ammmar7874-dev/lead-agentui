@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
+import '../../../core/responsive/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_button.dart';
@@ -137,12 +138,19 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1: Top Metrics Grid
-              _buildMetricsOverview(isDark),
+          padding: EdgeInsets.fromLTRB(
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            Responsive.value(context, mobile: 8, tablet: 16, desktop: 20),
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            40,
+          ),
+          child: ResponsiveContainer(
+            maxWidth: 1400,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1: Top Metrics Grid
+                _buildMetricsOverview(isDark),
 
               const SizedBox(height: 20),
 
@@ -221,9 +229,10 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             ],
           ),
         ),
-      );
-    });
-  }
+      ),
+    );
+  });
+}
 
   // ==========================================
   // METRICS OVERVIEW (3 Glass Cards)
@@ -624,14 +633,15 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             const SizedBox(height: 12),
 
             // Origins & Design Engine Info Badges
-            Row(
+            Wrap(
+              spacing: 10,
+              runSpacing: 6,
               children: [
                 _buildInfoBadge(
                   Icons.security_rounded,
                   '${site.origins} Allowed Origins',
                   isDark,
                 ),
-                const SizedBox(width: 10),
                 _buildInfoBadge(Icons.layers_outlined, site.design, isDark),
               ],
             ),

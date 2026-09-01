@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
+import '../../../core/responsive/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/custom_card.dart';
 import '../../../widgets/custom_textfield.dart';
 import '../controllers/user_shared_controller.dart';
 
+// ==========================================
+// MODELS
+// ==========================================
 class QuickActionToggleItem {
   final String id;
   final String icon;
@@ -38,6 +42,9 @@ class QuickActionSiteGroup {
   int get shownCount => items.where((i) => i.isShown.value).length;
 }
 
+// ==========================================
+// CONTROLLER
+// ==========================================
 class BotSettingsController extends GetxController {
   static BotSettingsController get to => Get.find();
 
@@ -65,8 +72,9 @@ class BotSettingsController extends GetxController {
 
   // 3: Quick Action Functionality Cards Data
   late final List<QuickActionSiteGroup> quickActionGroups;
+  final RxString quickActionFilter = 'all'.obs; // 'all' | 'shown' | 'hidden'
 
-  // 4: Integration State (Screenshot 1)
+  // 4: Integration State
   final String embedSnippet = '<script src="https://airagchatbot.com/widget.js" data-org="cmmqn8lrb0021gxkdt3yvr5um"></script>';
   final String widgetApiKey = 'pub_cmmqn8lrb0021gxk';
   final String widgetSiteName = 'Excels_Tech Widget';
@@ -85,11 +93,11 @@ class BotSettingsController extends GetxController {
     'https://univenture.it.com', 'https://www.univenture.it.com', 'http://univenture.it.com',
   ];
 
-  // 5: Notifications State (Screenshot 2)
+  // 5: Notifications State
   final RxBool enableLeadNotifications = true.obs;
   final notificationEmailController = TextEditingController(text: 'alerts@company.com');
 
-  // 6: Placement State (Screenshot 3)
+  // 6: Placement State
   final RxString selectedPosition = 'Bottom Right'.obs;
   final List<String> positionOptions = const ['Bottom Right', 'Bottom Left', 'Top Right', 'Top Left'];
   final zIndexController = TextEditingController(text: '9999');
@@ -102,7 +110,7 @@ class BotSettingsController extends GetxController {
     text: 'https://excelsdigital.com/login\nhttps://excelsdigital.com/hr\nhttps://aipoweremail.com/files\nhttps://aipoweremail.com/inbox',
   );
 
-  // 7: Privacy State (Screenshot 4)
+  // 7: Privacy State
   final privacyPolicyUrlController = TextEditingController(text: 'https://yoursite.com/privacy');
   final visitorRetentionController = TextEditingController(text: '0');
   final conversationRetentionController = TextEditingController(text: '0');
@@ -120,11 +128,13 @@ class BotSettingsController extends GetxController {
 
   // Theme Colors
   final List<String> availableColors = const [
-    '#E60000', // Crimson Red (Screenshot)
+    '#E60000', // Crimson Red
     '#0284C7', // Ocean Sapphire
     '#10B981', // Emerald
     '#8B5CF6', // Royal Purple
     '#F59E0B', // Amber
+    '#EC4899', // Hot Pink
+    '#06B6D4', // Cyan
     '#111827', // Obsidian Black
   ];
 
@@ -182,7 +192,7 @@ class BotSettingsController extends GetxController {
         ],
       ),
       QuickActionSiteGroup(
-        siteName: 'AI LEAD GEN Industry level',
+        siteName: 'AI Lead Gen',
         domain: 'myleadsagent.com',
         items: [
           QuickActionToggleItem(id: 'leads_agent_1', icon: '📈', title: 'My Leads Agent', description: 'What is My Leads Agent?', isShown: true),
@@ -234,27 +244,36 @@ class BotSettingsController extends GetxController {
     item.isShown.toggle();
   }
 
+  void applyWelcomeTemplate(String template) {
+    PlatformHelper.selectionHaptic();
+    welcomeMessageController.text = template;
+    welcomeMode.value = 'Templates';
+  }
+
   void saveConfiguration() {
     PlatformHelper.mediumHaptic();
     Get.snackbar(
-      'Configuration Saved',
-      'Bot customizations, quick actions, and integrations synced live.',
+      'Changes Saved Live ✨',
+      'Bot customizations, theme accents, and widget integrations updated.',
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.success,
+      backgroundColor: const Color(0xFF10B981),
       colorText: Colors.white,
+      icon: const Icon(Icons.check_circle_rounded, color: Colors.white),
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
+      duration: const Duration(seconds: 3),
     );
   }
 
   void saveNotifications() {
     PlatformHelper.mediumHaptic();
     Get.snackbar(
-      'Notifications Saved',
-      'Lead alerts routed to ${notificationEmailController.text}',
+      'Notification Preferences Saved 📧',
+      'Lead notifications will be routed to ${notificationEmailController.text}',
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.success,
+      backgroundColor: const Color(0xFF0284C7),
       colorText: Colors.white,
+      icon: const Icon(Icons.mark_email_read_rounded, color: Colors.white),
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
@@ -263,11 +282,12 @@ class BotSettingsController extends GetxController {
   void savePlacement() {
     PlatformHelper.mediumHaptic();
     Get.snackbar(
-      'Placement Saved',
-      'Widget position updated to ${selectedPosition.value}',
+      'Placement Settings Saved 📐',
+      'Widget positioning set to ${selectedPosition.value}',
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.success,
+      backgroundColor: const Color(0xFF0284C7),
       colorText: Colors.white,
+      icon: const Icon(Icons.layers_rounded, color: Colors.white),
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
@@ -276,18 +296,19 @@ class BotSettingsController extends GetxController {
   void savePrivacy() {
     PlatformHelper.mediumHaptic();
     Get.snackbar(
-      'Privacy Settings Saved',
+      'Privacy Settings Updated 🔒',
       'Data retention policies updated successfully.',
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.success,
+      backgroundColor: const Color(0xFF10B981),
       colorText: Colors.white,
+      icon: const Icon(Icons.security_rounded, color: Colors.white),
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
   }
 
-  Future<void> sendTestMessage() async {
-    final text = testInputController.text.trim();
+  Future<void> sendTestMessage([String? customPrompt]) async {
+    final text = (customPrompt ?? testInputController.text).trim();
     if (text.isEmpty || isTestBotTyping.value) return;
 
     PlatformHelper.lightHaptic();
@@ -296,11 +317,16 @@ class BotSettingsController extends GetxController {
     _scrollTestToBottom();
 
     isTestBotTyping.value = true;
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 700));
 
-    String botReply = 'I am grounded in your connected sources. For "$text", our team delivers end-to-end AI solutions with 99.9% uptime.';
-    if (text.toLowerCase().contains('service') || text.toLowerCase().contains('help')) {
-      botReply = 'Of course! We would be happy to help you with MVP development, AI agents, and RAG knowledge systems.';
+    String botReply = 'I am connected to all your synced data sources. For "$text", our team delivers end-to-end intelligent AI solutions with 99.9% uptime.';
+    final lower = text.toLowerCase();
+    if (lower.contains('service') || lower.contains('help') || lower.contains('what')) {
+      botReply = 'Of course! We provide MVP development, custom AI chatbots, RAG search systems, and automated lead capture workflows.';
+    } else if (lower.contains('pricing') || lower.contains('cost') || lower.contains('plan')) {
+      botReply = 'We offer transparent tiered plans tailored to your traffic volume. You can also book a free 30-minute consultation with our engineers!';
+    } else if (lower.contains('demo') || lower.contains('book') || lower.contains('consult')) {
+      botReply = 'Great! Please share your work email or click "Book a Consultation" on the home screen to pick a convenient time slot.';
     }
 
     testMessages.add({'sender': 'assistant', 'text': botReply, 'time': 'Just now'});
@@ -361,6 +387,9 @@ class BotSettingsController extends GetxController {
   }
 }
 
+// ==========================================
+// VIEW
+// ==========================================
 class BotSettingsView extends StatelessWidget {
   const BotSettingsView({super.key});
 
@@ -374,60 +403,57 @@ class BotSettingsView extends StatelessWidget {
       final activeTab = controller.activeSubTab.value;
 
       return Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-        appBar: AppBar(
-          backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 20,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-            ),
-            onPressed: () => Get.back(),
-          ),
-          title: Text(
-            'Bot Settings',
-            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.save_rounded,
-                size: 22,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
-              onPressed: controller.saveConfiguration,
-              tooltip: 'Save Configuration',
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
+        backgroundColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+        appBar: _buildAppBar(controller, isDark),
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Sub-Tabs Navigation Bar (From Screenshot)
+            // 1: Hero Bot Summary Banner
+            _buildHeroBanner(controller, isDark),
+
+            // 2: Animated Floating Sub-Tabs Navigation Bar
             _buildSubTabsBar(controller, isDark),
 
-            // Tab Content
+            // 3: Animated Tab Content with Smooth Transitions
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (activeTab == 'customization') _buildCustomizationTab(controller, isDark),
-                    if (activeTab == 'test_bot') _buildTestBotTab(controller, isDark),
-                    if (activeTab == 'quick_actions') _buildQuickActionsTab(controller, isDark),
-                    if (activeTab == 'integration') _buildIntegrationTab(controller, isDark),
-                    if (activeTab == 'notifications') _buildNotificationsTab(controller, isDark),
-                    if (activeTab == 'placement') _buildPlacementTab(controller, isDark),
-                    if (activeTab == 'privacy') _buildPrivacyTab(controller, isDark),
-                  ],
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 280),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0.02, 0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: SingleChildScrollView(
+                  key: ValueKey<String>(activeTab),
+                  padding: EdgeInsets.fromLTRB(
+                    Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+                    Responsive.value(context, mobile: 16, tablet: 20, desktop: 24),
+                    Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+                    40,
+                  ),
+                  child: ResponsiveContainer(
+                    maxWidth: 1400,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (activeTab == 'customization') _buildCustomizationTab(controller, isDark),
+                        if (activeTab == 'test_bot') _buildTestBotTab(controller, isDark),
+                        if (activeTab == 'quick_actions') _buildQuickActionsTab(controller, isDark),
+                        if (activeTab == 'integration') _buildIntegrationTab(controller, isDark),
+                        if (activeTab == 'notifications') _buildNotificationsTab(controller, isDark),
+                        if (activeTab == 'placement') _buildPlacementTab(controller, isDark),
+                        if (activeTab == 'privacy') _buildPrivacyTab(controller, isDark),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -438,11 +464,237 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 1: ANIMATED SUB-TABS NAVIGATION BAR
+  // APP BAR
+  // ==========================================
+  PreferredSizeWidget _buildAppBar(BotSettingsController controller, bool isDark) {
+    return AppBar(
+      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      shadowColor: Colors.black.withValues(alpha: 0.05),
+      leading: IconButton(
+        icon: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 16,
+            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF334155),
+          ),
+        ),
+        onPressed: () => Get.back(),
+      ),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [controller.currentColor, controller.currentColor.withValues(alpha: 0.7)],
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.smart_toy_rounded, size: 16, color: Colors.white),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Bot Configuration',
+                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Text(
+                'Live Widget & AI Agent Settings',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        // Save Changes Glowing Action Button
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: ElevatedButton.icon(
+            onPressed: controller.saveConfiguration,
+            icon: const Icon(Icons.cloud_done_rounded, size: 15, color: Colors.white),
+            label: const Text(
+              'Save',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: controller.currentColor,
+              elevation: 2,
+              shadowColor: controller.currentColor.withValues(alpha: 0.4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ==========================================
+  // HERO BOT SUMMARY RIBBON
+  // ==========================================
+  Widget _buildHeroBanner(BotSettingsController controller, bool isDark) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Live Avatar Circle with Glow
+          Container(
+            width: 38,
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: controller.currentColor.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+              border: Border.all(color: controller.currentColor, width: 1.5),
+            ),
+            child: Text(
+              controller.selectedBotIcon.value,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        controller.assistantNameController.text.isNotEmpty
+                            ? controller.assistantNameController.text
+                            : 'Support Team',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF10B981),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text(
+                            'Active',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Connected to ${controller.allowedWebsites.length} domains • Instant CDN Sync',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          // Theme Hex Chip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: controller.currentColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: controller.currentColor.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: controller.currentColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  controller.selectedThemeColor.value,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontFamily: 'monospace',
+                    fontWeight: FontWeight.bold,
+                    color: controller.currentColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // ANIMATED SUB-TABS NAVIGATION BAR
   // ==========================================
   Widget _buildSubTabsBar(BotSettingsController controller, bool isDark) {
     final tabs = [
-      {'key': 'customization', 'label': 'Customization', 'icon': Icons.tune_rounded},
+      {'key': 'customization', 'label': 'Customization', 'icon': Icons.palette_outlined},
       {'key': 'test_bot', 'label': 'Test Your Bot', 'icon': Icons.chat_bubble_outline_rounded},
       {'key': 'quick_actions', 'label': 'Quick Actions', 'icon': Icons.grid_view_rounded},
       {'key': 'integration', 'label': 'Integration', 'icon': Icons.code_rounded},
@@ -452,12 +704,12 @@ class BotSettingsView extends StatelessWidget {
     ];
 
     return Container(
-      height: 52,
+      height: 48,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         border: Border(
           bottom: BorderSide(
-            color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+            color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
             width: 1,
           ),
         ),
@@ -465,7 +717,7 @@ class BotSettingsView extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: tabs.map((tab) {
             final isSelected = controller.activeSubTab.value == tab['key'];
@@ -482,66 +734,41 @@ class BotSettingsView extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 220),
                     curve: Curves.easeOutCubic,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? (isDark
-                              ? AppColors.primarySoft.withValues(alpha: 0.22)
-                              : AppColors.primary.withValues(alpha: 0.08))
+                          ? controller.currentColor.withValues(alpha: isDark ? 0.18 : 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected
+                            ? controller.currentColor.withValues(alpha: 0.3)
+                            : Colors.transparent,
+                      ),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AnimatedScale(
-                              scale: isSelected ? 1.08 : 1.0,
-                              duration: const Duration(milliseconds: 200),
-                              child: Icon(
-                                icon,
-                                size: 16,
-                                color: isSelected
-                                    ? AppColors.primaryLight
-                                    : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                              ),
-                            ),
-                            const SizedBox(width: 7),
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 200),
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                fontFamily: 'Inter',
-                                color: isSelected
-                                    ? (isDark ? Colors.white : AppColors.primary)
-                                    : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                              ),
-                              child: Text(label),
-                            ),
-                          ],
+                        AnimatedScale(
+                          scale: isSelected ? 1.1 : 1.0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(
+                            icon,
+                            size: 15,
+                            color: isSelected
+                                ? controller.currentColor
+                                : (isDark ? AppColors.darkTextMuted : const Color(0xFF64748B)),
+                          ),
                         ),
-                        const SizedBox(height: 5),
-                        // Animated Glow Underline Indicator
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                          height: 2.5,
-                          width: isSelected ? 28 : 0,
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary : Colors.transparent,
-                            borderRadius: BorderRadius.circular(4),
-                            boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: AppColors.primary.withValues(alpha: 0.6),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ]
-                                : null,
+                        const SizedBox(width: 6),
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: isSelected
+                                ? (isDark ? Colors.white : controller.currentColor)
+                                : (isDark ? AppColors.darkTextSecondary : const Color(0xFF475569)),
                           ),
                         ),
                       ],
@@ -557,7 +784,7 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 2: TAB 1 - CUSTOMIZATION (DESIGN & CONTENT)
+  // TAB 1: CUSTOMIZATION (DESIGN & CONTENT)
   // ==========================================
   Widget _buildCustomizationTab(BotSettingsController controller, bool isDark) {
     return LayoutBuilder(
@@ -567,309 +794,388 @@ class BotSettingsView extends StatelessWidget {
         final formSection = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Design & Content',
-              style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            _buildSectionHeader(
+              icon: Icons.tune_rounded,
+              title: 'Design & Content',
+              subtitle: 'Customize how your AI assistant appears to visitors on your websites.',
+              isDark: isDark,
+              accentColor: controller.currentColor,
             ),
-            const SizedBox(height: 16),
-
-            // Assistant Name
-            Text(
-              'Assistant Name',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            CustomTextField(
-              controller: controller.assistantNameController,
-              hint: 'Support Team',
-              onChanged: (_) => controller.update(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Welcome Message & Mode Pill Toggle
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.primaryLight),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Welcome Message',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                // Templates vs Custom Toggle Pills
-                Container(
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkCard : AppColors.lightBackground,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-                  ),
-                  child: Row(
-                    children: [
-                      _buildPillTab('Templates', controller.welcomeMode.value == 'Templates', () {
-                        controller.welcomeMode.value = 'Templates';
-                        controller.welcomeMessageController.text = 'Hello! Welcome to ExcelsTech. How can our AI assistant assist you today?';
-                      }, isDark),
-                      _buildPillTab('Custom', controller.welcomeMode.value == 'Custom', () {
-                        controller.welcomeMode.value = 'Custom';
-                      }, isDark),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              controller: controller.welcomeMessageController,
-              maxLines: 3,
-              style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-              decoration: InputDecoration(
-                hintText: 'Hi! How can I help you today?',
-                hintStyle: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                filled: true,
-                fillColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                contentPadding: const EdgeInsets.all(12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Theme Color Swatch & Palette (From Screenshot #E60000)
-            Text(
-              'Theme Color',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: controller.currentColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  controller.selectedThemeColor.value,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: controller.availableColors.map((hex) {
-                        final isSel = controller.selectedThemeColor.value == hex;
-                        final color = Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
-
-                        return GestureDetector(
-                          onTap: () => controller.selectThemeColor(hex),
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSel ? Colors.white : Colors.transparent,
-                                width: 2,
-                              ),
-                              boxShadow: isSel
-                                  ? [BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 6)]
-                                  : null,
-                            ),
-                            child: isSel
-                                ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                                : null,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
             const SizedBox(height: 18),
 
-            // Bot Icon Selection Grid (24 Icons from Screenshot)
-            Row(
-              children: [
-                const Icon(Icons.face_rounded, size: 14, color: AppColors.primaryLight),
-                const SizedBox(width: 6),
-                Text(
-                  'Bot Icon',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-              ),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 6,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1.0,
-                ),
-                itemCount: controller.availableBotIcons.length,
-                itemBuilder: (context, index) {
-                  final icon = controller.availableBotIcons[index];
-                  final isSelected = controller.selectedBotIcon.value == icon && !controller.hasCustomIcon.value;
-
-                  return InkWell(
-                    onTap: () => controller.selectBotIcon(icon),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primarySoft
-                            : (isDark ? AppColors.darkSurface : AppColors.lightBackground),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isSelected ? AppColors.primary : (isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-                          width: isSelected ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Text(icon, style: const TextStyle(fontSize: 20)),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Custom Icon Upload
-            Text(
-              'Custom Icon (upload image)',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    PlatformHelper.lightHaptic();
-                    controller.hasCustomIcon.value = true;
-                    Get.snackbar('Image Uploaded', 'Custom mascot uploaded', snackPosition: SnackPosition.BOTTOM);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  ),
-                  child: const Text('Choose File', style: TextStyle(fontSize: 12)),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  controller.hasCustomIcon.value ? 'mascot.png' : 'No file chosen',
-                  style: TextStyle(fontSize: 11, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                ),
-              ],
-            ),
-            if (controller.hasCustomIcon.value) ...[
-              const SizedBox(height: 8),
-              Row(
+            // Assistant Name Card
+            _buildCardContainer(
+              isDark: isDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('🤖', style: TextStyle(fontSize: 18)),
+                  Text(
+                    'Assistant Name',
+                    style: _labelStyle(isDark),
                   ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    onPressed: () => controller.hasCustomIcon.value = false,
-                    child: const Text('Remove', style: TextStyle(fontSize: 11, color: AppColors.error)),
+                  const SizedBox(height: 6),
+                  CustomTextField(
+                    controller: controller.assistantNameController,
+                    hint: 'e.g. Support Team, Eva AI',
+                    onChanged: (_) => controller.update(),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'This name is displayed in the widget top header and live bubble responses.',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                    ),
                   ),
                 ],
               ),
-            ],
+            ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 14),
 
-            // Save Configuration Button (Screenshot)
+            // Welcome Message & Quick Preset Templates
+            _buildCardContainer(
+              isDark: isDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppColors.secondary),
+                          const SizedBox(width: 6),
+                          Text('Welcome Message', style: _labelStyle(isDark)),
+                        ],
+                      ),
+                      // Templates vs Custom Toggle
+                      Container(
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkBackground : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          children: [
+                            _buildPillToggle(
+                              'Templates',
+                              controller.welcomeMode.value == 'Templates',
+                              () => controller.welcomeMode.value = 'Templates',
+                              isDark,
+                              controller.currentColor,
+                            ),
+                            _buildPillToggle(
+                              'Custom',
+                              controller.welcomeMode.value == 'Custom',
+                              () => controller.welcomeMode.value = 'Custom',
+                              isDark,
+                              controller.currentColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Quick Template Suggestion Chips
+                  if (controller.welcomeMode.value == 'Templates') ...[
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _buildTemplateChip('👋 Friendly', 'Hi! How can I help you today?', controller, isDark),
+                        _buildTemplateChip('🚀 Sales & Leads', 'Welcome! Interested in growing your business with our AI tools?', controller, isDark),
+                        _buildTemplateChip('🛠️ Technical Support', 'Hello! Need help troubleshooting or configuring an integration?', controller, isDark),
+                        _buildTemplateChip('🏢 Enterprise', 'Welcome to ExcelsTech. Ask us anything about our software solutions!', controller, isDark),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+
+                  TextField(
+                    controller: controller.welcomeMessageController,
+                    maxLines: 3,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Hi! How can I help you today?',
+                      hintStyle: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? AppColors.darkTextMuted : const Color(0xFF94A3B8),
+                      ),
+                      filled: true,
+                      fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+                      contentPadding: const EdgeInsets.all(12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: controller.currentColor, width: 1.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // Theme Color Swatches & Custom Palette
+            _buildCardContainer(
+              isDark: isDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.color_lens_outlined, size: 15, color: AppColors.secondary),
+                          const SizedBox(width: 6),
+                          Text('Theme Color', style: _labelStyle(isDark)),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: controller.currentColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          controller.selectedThemeColor.value,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontFamily: 'monospace',
+                            fontWeight: FontWeight.bold,
+                            color: controller.currentColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: controller.availableColors.map((hex) {
+                      final isSel = controller.selectedThemeColor.value == hex;
+                      final color = Color(int.parse('FF${hex.replaceAll('#', '')}', radix: 16));
+
+                      return GestureDetector(
+                        onTap: () => controller.selectThemeColor(hex),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSel ? Colors.white : Colors.transparent,
+                              width: 2.5,
+                            ),
+                            boxShadow: [
+                              if (isSel)
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.6),
+                                  blurRadius: 10,
+                                  spreadRadius: 1,
+                                ),
+                            ],
+                          ),
+                          child: isSel
+                              ? const Icon(Icons.check_rounded, size: 18, color: Colors.white)
+                              : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // Bot Icon Grid (24 Icons)
+            _buildCardContainer(
+              isDark: isDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.face_retouching_natural_rounded, size: 15, color: AppColors.secondary),
+                          const SizedBox(width: 6),
+                          Text('Bot Avatar Icon', style: _labelStyle(isDark)),
+                        ],
+                      ),
+                      Text(
+                        'Selected: ${controller.selectedBotIcon.value}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 6,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 1.0,
+                    ),
+                    itemCount: controller.availableBotIcons.length,
+                    itemBuilder: (context, index) {
+                      final icon = controller.availableBotIcons[index];
+                      final isSelected = controller.selectedBotIcon.value == icon && !controller.hasCustomIcon.value;
+
+                      return InkWell(
+                        onTap: () => controller.selectBotIcon(icon),
+                        borderRadius: BorderRadius.circular(10),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? controller.currentColor.withValues(alpha: 0.15)
+                                : (isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC)),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isSelected
+                                  ? controller.currentColor
+                                  : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0)),
+                              width: isSelected ? 2 : 1,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: controller.currentColor.withValues(alpha: 0.25),
+                                      blurRadius: 6,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Text(icon, style: const TextStyle(fontSize: 20)),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 14),
+                  Divider(height: 1, color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0)),
+                  const SizedBox(height: 12),
+
+                  // Custom Mascot Upload
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          PlatformHelper.lightHaptic();
+                          controller.hasCustomIcon.value = true;
+                          Get.snackbar(
+                            'Image Uploaded ✨',
+                            'Custom mascot icon applied live.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                        },
+                        icon: const Icon(Icons.file_upload_outlined, size: 14),
+                        label: const Text('Upload Custom Mascot', style: TextStyle(fontSize: 11)),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          controller.hasCustomIcon.value ? 'mascot.png' : 'PNG or SVG (1:1 ratio)',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Save Configuration Button
             SizedBox(
-              width: 200,
-              height: 42,
+              width: double.infinity,
+              height: 44,
               child: ElevatedButton.icon(
                 onPressed: controller.saveConfiguration,
-                icon: const Icon(Icons.check_rounded, size: 16, color: Colors.white),
-                label: const Text('Save Configuration', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+                icon: const Icon(Icons.check_circle_outline_rounded, size: 16, color: Colors.white),
+                label: const Text(
+                  'Save Customizations',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0284C7),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  backgroundColor: controller.currentColor,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
             ),
           ],
         );
 
-        final previewSection = _buildLiveWidgetPreviewBox(controller, isDark);
+        final previewSection = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.preview_rounded, size: 16, color: AppColors.secondary),
+                const SizedBox(width: 6),
+                Text(
+                  'Live Widget Preview',
+                  style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Interactive real-time preview of how visitors see your widget.',
+              style: TextStyle(
+                fontSize: 11,
+                color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(height: 14),
+            _buildLiveWidgetPreviewBox(controller, isDark),
+          ],
+        );
 
         if (isWide) {
           return Row(
@@ -886,7 +1192,7 @@ class BotSettingsView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             formSection,
-            const SizedBox(height: 28),
+            const SizedBox(height: 30),
             previewSection,
           ],
         );
@@ -894,85 +1200,122 @@ class BotSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildPillTab(String label, bool isSelected, VoidCallback onTap, bool isDark) {
-    return GestureDetector(
-      onTap: onTap,
+  Widget _buildTemplateChip(String label, String template, BotSettingsController controller, bool isDark) {
+    return InkWell(
+      onTap: () => controller.applyWelcomeTemplate(template),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0284C7) : Colors.transparent,
-          borderRadius: BorderRadius.circular(4),
+          color: isDark ? AppColors.darkBackground : const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+          ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 11,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Colors.white : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF334155),
           ),
         ),
       ),
     );
   }
 
-  // Live Interactive Preview Widget Box (Screenshot 1 Right Pane)
+  // ==========================================
+  // LIVE WIDGET PREVIEW MOCKUP
+  // ==========================================
   Widget _buildLiveWidgetPreviewBox(BotSettingsController controller, bool isDark) {
     final themeColor = controller.currentColor;
-    final botName = controller.assistantNameController.text.isNotEmpty ? controller.assistantNameController.text : 'Support Team';
-    final welcome = controller.welcomeMessageController.text.isNotEmpty ? controller.welcomeMessageController.text : 'Hi! How can I help you today?';
+    final botName = controller.assistantNameController.text.isNotEmpty
+        ? controller.assistantNameController.text
+        : 'Support Team';
+    final welcome = controller.welcomeMessageController.text.isNotEmpty
+        ? controller.welcomeMessageController.text
+        : 'Hi! How can I help you today?';
 
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-            blurRadius: 20,
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top Red Header (Screenshot 1)
+            // Dynamic Widget Header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              color: themeColor,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [themeColor, themeColor.withValues(alpha: 0.85)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child: Row(
                 children: [
                   Container(
-                    width: 28,
-                    height: 28,
+                    width: 32,
+                    height: 32,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withValues(alpha: 0.22),
                       shape: BoxShape.circle,
                     ),
-                    child: Text(controller.selectedBotIcon.value, style: const TextStyle(fontSize: 16)),
+                    child: Text(controller.selectedBotIcon.value, style: const TextStyle(fontSize: 18)),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      botName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          botName,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF22C55E),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              'Always active',
+                              style: TextStyle(fontSize: 10, color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF22C55E),
-                      shape: BoxShape.circle,
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 18, color: Colors.white),
+                    onPressed: () {},
+                    tooltip: 'Minimize',
                   ),
                 ],
               ),
@@ -980,7 +1323,7 @@ class BotSettingsView extends StatelessWidget {
 
             // Live Chat Bubbles
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -990,21 +1333,27 @@ class BotSettingsView extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+                        color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(14),
+                          topRight: Radius.circular(14),
+                          bottomRight: Radius.circular(14),
+                        ),
+                        border: Border.all(
+                          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                        ),
                       ),
                       child: Text(
                         welcome,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B),
                         ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
 
                   // User Response Bubble
                   Align(
@@ -1013,7 +1362,11 @@ class BotSettingsView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: themeColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(14),
+                          topRight: Radius.circular(14),
+                          bottomLeft: Radius.circular(14),
+                        ),
                       ),
                       child: const Text(
                         'Tell me about your services?',
@@ -1026,7 +1379,7 @@ class BotSettingsView extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
 
                   // Assistant Response Bubble
                   Align(
@@ -1034,30 +1387,38 @@ class BotSettingsView extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+                        color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(14),
+                          topRight: Radius.circular(14),
+                          bottomRight: Radius.circular(14),
+                        ),
+                        border: Border.all(
+                          color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                        ),
                       ),
                       child: Text(
-                        "Of course! We'd be happy to help..",
+                        "Of course! We'd be happy to help you with MVP development and automated AI agents.",
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B),
                         ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // Input Box Simulation
                   Container(
                     height: 40,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+                      color: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -1066,13 +1427,13 @@ class BotSettingsView extends StatelessWidget {
                             'Type a message...',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                              color: isDark ? AppColors.darkTextMuted : const Color(0xFF94A3B8),
                             ),
                           ),
                         ),
                         Container(
-                          width: 24,
-                          height: 24,
+                          width: 26,
+                          height: 26,
                           decoration: BoxDecoration(
                             color: themeColor,
                             shape: BoxShape.circle,
@@ -1092,7 +1453,7 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 3: TAB 2 - TEST YOUR BOT
+  // TAB 2: TEST YOUR BOT (LIVE SANDBOX)
   // ==========================================
   Widget _buildTestBotTab(BotSettingsController controller, bool isDark) {
     return LayoutBuilder(
@@ -1102,8 +1463,10 @@ class BotSettingsView extends StatelessWidget {
         final chatTester = Container(
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkCard : Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
@@ -1113,10 +1476,10 @@ class BotSettingsView extends StatelessWidget {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
             child: Column(
               children: [
-                // Top Header (Red header with Online & Reset icon)
+                // Top Header (Reactive colored header with Reset icon)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   color: controller.currentColor,
@@ -1129,18 +1492,30 @@ class BotSettingsView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              controller.assistantNameController.text.isNotEmpty ? controller.assistantNameController.text : 'Support Team',
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                              controller.assistantNameController.text.isNotEmpty
+                                  ? controller.assistantNameController.text
+                                  : 'Support Team',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                             Row(
                               children: [
                                 Container(
                                   width: 6,
                                   height: 6,
-                                  decoration: const BoxDecoration(color: Color(0xFF22C55E), shape: BoxShape.circle),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF22C55E),
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                                 const SizedBox(width: 4),
-                                const Text('Online', style: TextStyle(fontSize: 10, color: Colors.white70)),
+                                const Text(
+                                  'Live Sandbox • Ready',
+                                  style: TextStyle(fontSize: 10, color: Colors.white70),
+                                ),
                               ],
                             ),
                           ],
@@ -1155,16 +1530,58 @@ class BotSettingsView extends StatelessWidget {
                   ),
                 ),
 
+                // Quick Prompt Suggestion Chips
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildPromptSuggestion('What services do you offer?', controller, isDark),
+                        const SizedBox(width: 6),
+                        _buildPromptSuggestion('Pricing plans', controller, isDark),
+                        const SizedBox(width: 6),
+                        _buildPromptSuggestion('Book a consultation', controller, isDark),
+                      ],
+                    ),
+                  ),
+                ),
+
                 // Messages Stream
                 Container(
-                  height: 340,
+                  height: 320,
                   padding: const EdgeInsets.all(16),
                   color: isDark ? AppColors.darkBackground : const Color(0xFFFAFAFA),
                   child: Obx(() {
                     return ListView.builder(
                       controller: controller.testScrollController,
-                      itemCount: controller.testMessages.length,
+                      itemCount: controller.testMessages.length + (controller.isTestBotTyping.value ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == controller.testMessages.length) {
+                          // Typing Indicator Bubble
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isDark ? AppColors.darkSurface : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text('Bot is typing...', style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
                         final msg = controller.testMessages[index];
                         final isUser = msg['sender'] == 'user';
 
@@ -1173,17 +1590,24 @@ class BotSettingsView extends StatelessWidget {
                           child: Align(
                             alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
                             child: Container(
+                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                               decoration: BoxDecoration(
                                 color: isUser ? controller.currentColor : (isDark ? AppColors.darkSurface : Colors.white),
                                 borderRadius: BorderRadius.circular(12),
-                                border: isUser ? null : Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+                                border: isUser
+                                    ? null
+                                    : Border.all(
+                                        color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                                      ),
                               ),
                               child: Text(
                                 msg['text'] as String,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isUser ? Colors.white : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+                                  color: isUser
+                                      ? Colors.white
+                                      : (isDark ? AppColors.darkTextPrimary : const Color(0xFF1E293B)),
                                 ),
                               ),
                             ),
@@ -1199,7 +1623,11 @@ class BotSettingsView extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkSurface : Colors.white,
-                    border: Border(top: BorderSide(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder)),
+                    border: Border(
+                      top: BorderSide(
+                        color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                      ),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -1207,27 +1635,44 @@ class BotSettingsView extends StatelessWidget {
                         child: TextField(
                           controller: controller.testInputController,
                           onSubmitted: (_) => controller.sendTestMessage(),
-                          style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                          ),
                           decoration: InputDecoration(
-                            hintText: 'Type a message...',
-                            hintStyle: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                            hintText: 'Type a message to test bot...',
+                            hintStyle: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? AppColors.darkTextMuted : const Color(0xFF94A3B8),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             filled: true,
-                            fillColor: isDark ? AppColors.darkCard : const Color(0xFFF9FAFB),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder)),
+                            fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       InkWell(
-                        onTap: controller.sendTestMessage,
-                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => controller.sendTestMessage(),
+                        borderRadius: BorderRadius.circular(10),
                         child: Container(
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
                             color: controller.currentColor,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Icon(Icons.send_rounded, size: 16, color: Colors.white),
                         ),
@@ -1240,9 +1685,8 @@ class BotSettingsView extends StatelessWidget {
           ),
         );
 
-        final instructionsCard = CustomCard(
-          padding: const EdgeInsets.all(20),
-          backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+        final instructionsCard = _buildCardContainer(
+          isDark: isDark,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1251,9 +1695,9 @@ class BotSettingsView extends StatelessWidget {
                   const Text('💡', style: TextStyle(fontSize: 20)),
                   const SizedBox(width: 8),
                   Text(
-                    'How to Test',
+                    'How to Test Your Agent',
                     style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -1261,18 +1705,18 @@ class BotSettingsView extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Use this chat panel to test your bot\'s responses in real-time. Messages are sent through the same AI pipeline your website visitors will use.',
+                'Use this live chat console to test your bot\'s grounded responses in real-time. Messages are evaluated through your synced website knowledge base.',
                 style: TextStyle(
                   fontSize: 12,
                   height: 1.5,
-                  color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+                  color: isDark ? AppColors.darkTextSecondary : const Color(0xFF475569),
                 ),
               ),
               const SizedBox(height: 16),
-              _buildBulletItem('Test different types of questions', isDark),
-              _buildBulletItem('Verify the welcome message appears correctly', isDark),
-              _buildBulletItem('Check response quality and accuracy', isDark),
-              _buildBulletItem('Try edge cases and unusual queries', isDark),
+              _buildBulletItem('Test service queries & pricing questions', isDark),
+              _buildBulletItem('Verify welcome message trigger behavior', isDark),
+              _buildBulletItem('Check accuracy of grounded answers', isDark),
+              _buildBulletItem('Try edge cases or missing domain links', isDark),
             ],
           ),
         );
@@ -1300,136 +1744,173 @@ class BotSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildBulletItem(String text, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('• ', style: TextStyle(fontSize: 14, color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563))),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
-              ),
-            ),
+  Widget _buildPromptSuggestion(String prompt, BotSettingsController controller, bool isDark) {
+    return InkWell(
+      onTap: () => controller.sendTestMessage(prompt),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
           ),
-        ],
+        ),
+        child: Text(
+          prompt,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: isDark ? AppColors.darkTextPrimary : const Color(0xFF334155),
+          ),
+        ),
       ),
     );
   }
 
   // ==========================================
-  // 4: TAB 3 - QUICK ACTIONS
+  // TAB 3: QUICK ACTIONS (FUNCTIONALITY CARDS)
   // ==========================================
   Widget _buildQuickActionsTab(BotSettingsController controller, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Actions (functionality cards)',
-          style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Each crawled website\'s main services are detected separately and shown on the widget\'s home screen for that site. Turn one OFF to hide its card on that website — visitors can still get the answer if they type the question.',
-          style: TextStyle(
-            fontSize: 12,
-            height: 1.5,
-            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-          ),
+        _buildSectionHeader(
+          icon: Icons.grid_view_rounded,
+          title: 'Quick Actions (Functionality Cards)',
+          subtitle: 'Main services detected on your crawled websites are shown on the widget\'s home screen. Turn off any card you want to hide.',
+          isDark: isDark,
+          accentColor: controller.currentColor,
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
+
+        // Filter Pills Row
+        Row(
+          children: [
+            _buildFilterPill('all', 'All (${controller.quickActionGroups.fold<int>(0, (sum, g) => sum + g.items.length)})', controller, isDark),
+            const SizedBox(width: 8),
+            _buildFilterPill('shown', 'Shown Only', controller, isDark),
+            const SizedBox(width: 8),
+            _buildFilterPill('hidden', 'Hidden Only', controller, isDark),
+          ],
+        ),
+
+        const SizedBox(height: 16),
 
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: controller.quickActionGroups.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 20),
+          separatorBuilder: (context, index) => const SizedBox(height: 18),
           itemBuilder: (context, index) {
             final group = controller.quickActionGroups[index];
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.language_rounded, size: 18, color: AppColors.primaryLight),
-                        const SizedBox(width: 8),
-                        Text(
-                          group.siteName,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          group.domain,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Obx(
-                      () => Text(
-                        '${group.shownCount}/${group.items.length} shown',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            return _buildCardContainer(
+              isDark: isDark,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Group Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.secondarySoft,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.language_rounded, size: 16, color: AppColors.secondary),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                group.siteName,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                group.domain,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkCard : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorder),
+                      const SizedBox(width: 8),
+                      Obx(
+                        () => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${group.shownCount}/${group.items.length} shown',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF475569),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: ListView.separated(
+
+                  const SizedBox(height: 12),
+                  Divider(height: 1, color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0)),
+                  const SizedBox(height: 8),
+
+                  // Action Items
+                  ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: group.items.length,
                     separatorBuilder: (context, idx) => Divider(
                       height: 1,
-                      thickness: 1,
-                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                      color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFF1F5F9),
                     ),
                     itemBuilder: (context, idx) {
                       final item = group.items[idx];
 
                       return Obx(() {
                         final isShown = item.isShown.value;
+                        final filter = controller.quickActionFilter.value;
 
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        if (filter == 'shown' && !isShown) return const SizedBox.shrink();
+                        if (filter == 'hidden' && isShown) return const SizedBox.shrink();
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Row(
                             children: [
                               Container(
-                                width: 32,
-                                height: 32,
+                                width: 34,
+                                height: 34,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6),
+                                  color: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                                  ),
                                 ),
                                 child: Text(item.icon, style: const TextStyle(fontSize: 16)),
                               ),
@@ -1444,8 +1925,8 @@ class BotSettingsView extends StatelessWidget {
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: isShown
-                                            ? (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary)
-                                            : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                                            ? (isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A))
+                                            : (isDark ? AppColors.darkTextMuted : const Color(0xFF94A3B8)),
                                       ),
                                     ),
                                     const SizedBox(height: 2),
@@ -1455,19 +1936,21 @@ class BotSettingsView extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                        color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 8),
                               Text(
                                 isShown ? 'Shown' : 'Hidden',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isShown ? const Color(0xFF0284C7) : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                                  fontWeight: FontWeight.bold,
+                                  color: isShown
+                                      ? const Color(0xFF0284C7)
+                                      : (isDark ? AppColors.darkTextMuted : const Color(0xFF94A3B8)),
                                 ),
                               ),
                               const SizedBox(width: 6),
@@ -1485,8 +1968,8 @@ class BotSettingsView extends StatelessWidget {
                       });
                     },
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),
@@ -1494,46 +1977,71 @@ class BotSettingsView extends StatelessWidget {
     );
   }
 
+  Widget _buildFilterPill(String key, String label, BotSettingsController controller, bool isDark) {
+    return Obx(() {
+      final isSel = controller.quickActionFilter.value == key;
+
+      return InkWell(
+        onTap: () {
+          PlatformHelper.selectionHaptic();
+          controller.quickActionFilter.value = key;
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSel
+                ? controller.currentColor
+                : (isDark ? AppColors.darkSurface : Colors.white),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSel
+                  ? controller.currentColor
+                  : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0)),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isSel ? FontWeight.bold : FontWeight.w500,
+              color: isSel
+                  ? Colors.white
+                  : (isDark ? AppColors.darkTextSecondary : const Color(0xFF475569)),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
   // ==========================================
-  // 5: TAB 4 - INTEGRATION (SCREENSHOT 1)
+  // TAB 4: INTEGRATION (EMBED CODE & DOMAINS)
   // ==========================================
   Widget _buildIntegrationTab(BotSettingsController controller, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1: Widget Embed Code Card
-        CustomCard(
-          padding: const EdgeInsets.all(20),
-          backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+        _buildSectionHeader(
+          icon: Icons.code_rounded,
+          title: 'Widget Embed Code',
+          subtitle: 'Copy and paste this script before the closing </body> tag in your website\'s HTML.',
+          isDark: isDark,
+          accentColor: controller.currentColor,
+        ),
+        const SizedBox(height: 16),
+
+        // Embed Code Terminal Card
+        _buildCardContainer(
+          isDark: isDark,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const Text('📑', style: TextStyle(fontSize: 18)),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Widget Embed Code',
-                    style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Copy and paste this code just before the closing </body> tag in your website\'s index.html file. The key is already included — just copy and paste!',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Metadata Row: Active Badge, Site, Key
-              Row(
+              // Metadata Row: Active Badge, Site, Key (Responsive Wrap)
+              Wrap(
+                spacing: 10,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -1546,22 +2054,20 @@ class BotSettingsView extends StatelessWidget {
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
-                  const SizedBox(width: 12),
                   Text(
                     'Site: ${controller.widgetSiteName}',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                     ),
                   ),
-                  const SizedBox(width: 12),
                   Text(
                     'Key: ${controller.widgetApiKey}',
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'monospace',
-                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -1573,59 +2079,81 @@ class BotSettingsView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                  color: isDark ? const Color(0xFF080C14) : const Color(0xFF0F172A),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: isDark ? AppColors.darkBorderSubtle : const Color(0xFF334155),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: SelectableText(
                         controller.embedSnippet,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontFamily: 'monospace',
-                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
+                          color: Color(0xFF38BDF8),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    TextButton.icon(
+                    ElevatedButton.icon(
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: controller.embedSnippet));
                         PlatformHelper.lightHaptic();
-                        Get.snackbar('Copied', 'Widget embed snippet copied to clipboard', snackPosition: SnackPosition.BOTTOM);
+                        Get.snackbar(
+                          'Copied to Clipboard! ✨',
+                          'Paste this script before </body> on your website.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: const Color(0xFF10B981),
+                          colorText: Colors.white,
+                        );
                       },
-                      icon: const Icon(Icons.copy_rounded, size: 14, color: Color(0xFF4B5563)),
-                      label: const Text('Copy', style: TextStyle(fontSize: 12, color: Color(0xFF4B5563), fontWeight: FontWeight.w600)),
-                      style: TextButton.styleFrom(
+                      icon: const Icon(Icons.copy_rounded, size: 13, color: Colors.white),
+                      label: const Text(
+                        'Copy',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0284C7),
+                        elevation: 0,
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
 
-              // Allowed Websites Section
+              // Allowed Websites Tag Cloud
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('🌐', style: TextStyle(fontSize: 14)),
                   const SizedBox(width: 6),
-                  Text(
-                    'Allowed Websites',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937),
-                    ),
-                  ),
-                  Text(
-                    ' — added automatically when you crawl a website',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
+                        text: 'Allowed Websites',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: ' — added automatically when you crawl a website',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.normal,
+                              color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -1640,15 +2168,17 @@ class BotSettingsView extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkSurface : const Color(0xFFF3F4F6),
+                      color: isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                      ),
                     ),
                     child: Text(
                       url,
                       style: TextStyle(
                         fontSize: 11,
-                        color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+                        color: isDark ? AppColors.darkTextSecondary : const Color(0xFF334155),
                       ),
                     ),
                   );
@@ -1657,10 +2187,10 @@ class BotSettingsView extends StatelessWidget {
 
               const SizedBox(height: 12),
               Text(
-                'This widget works on all of your organization\'s crawled websites — one script, everywhere. No manual setup needed.',
+                'This widget works across all configured domains — one script, everywhere. No manual setup needed.',
                 style: TextStyle(
                   fontSize: 11,
-                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+                  color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
                 ),
               ),
             ],
@@ -1669,10 +2199,9 @@ class BotSettingsView extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // 2: Installation Steps Card
-        CustomCard(
-          padding: const EdgeInsets.all(20),
-          backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+        // Installation Steps Pipeline
+        _buildCardContainer(
+          isDark: isDark,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1681,7 +2210,7 @@ class BotSettingsView extends StatelessWidget {
                   const Text('🔧', style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   Text(
-                    'Installation Steps',
+                    '5-Step Installation Guide',
                     style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -1689,12 +2218,12 @@ class BotSettingsView extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               _buildStepItem('1', 'Copy the script tag above (key is already included!)', isDark),
-              _buildStepItem('2', 'Open your website\'s index.html file', isDark),
+              _buildStepItem('2', 'Open your website\'s index.html or theme template file', isDark),
               _buildStepItem('3', 'Paste the code inside the <body> tag (before </body>)', isDark),
-              _buildStepItem('4', 'Save and refresh your website', isDark),
-              _buildStepItem('5', 'The chat widget will appear in the bottom-right corner 🎉', isDark),
+              _buildStepItem('4', 'Save changes and reload your live website', isDark),
+              _buildStepItem('5', 'The chat widget will appear in the designated corner 🎉', isDark),
             ],
           ),
         ),
@@ -1704,17 +2233,34 @@ class BotSettingsView extends StatelessWidget {
 
   Widget _buildStepItem(String num, String text, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$num. ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937))),
+          Container(
+            width: 20,
+            height: 20,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              num,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF4B5563),
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF334155),
               ),
             ),
           ),
@@ -1724,113 +2270,127 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 6: TAB 5 - NOTIFICATIONS (SCREENSHOT 2)
+  // TAB 5: NOTIFICATIONS (EMAIL ALERTS)
   // ==========================================
   Widget _buildNotificationsTab(BotSettingsController controller, bool isDark) {
-    return CustomCard(
-      padding: const EdgeInsets.all(24),
-      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+    return _buildCardContainer(
+      isDark: isDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text('📧', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 8),
-              Text(
-                'Lead Notification Email',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          _buildSectionHeader(
+            icon: Icons.mark_email_read_rounded,
+            title: 'Lead Notification Email',
+            subtitle: 'Get notified immediately via email whenever a visitor submits an order or lead.',
+            isDark: isDark,
+            accentColor: controller.currentColor,
           ),
           const SizedBox(height: 18),
 
           // Order/Lead Email Notifications Toggle
-          Text(
-            'Order/Lead Email Notifications',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
-            ),
-          ),
+          Text('Order & Lead Email Alerts', style: _labelStyle(isDark)),
           const SizedBox(height: 8),
           Obx(() {
             final isEnabled = controller.enableLeadNotifications.value;
 
-            return Row(
-              children: [
-                Transform.scale(
-                  scale: 0.85,
-                  child: Switch(
-                    value: isEnabled,
-                    onChanged: (val) => controller.enableLeadNotifications.value = val,
-                    activeTrackColor: const Color(0xFF0284C7),
-                  ),
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  isEnabled ? '✅ ON — Emails will be sent when orders/leads are captured' : 'OFF — No email alerts',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: isEnabled ? const Color(0xFF16A34A) : (isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Transform.scale(
+                    scale: 0.85,
+                    child: Switch(
+                      value: isEnabled,
+                      onChanged: (val) => controller.enableLeadNotifications.value = val,
+                      activeTrackColor: const Color(0xFF0284C7),
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      isEnabled
+                          ? '✅ ON — Instant emails sent when orders/leads are captured'
+                          : 'OFF — Email notifications are disabled',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isEnabled
+                            ? const Color(0xFF16A34A)
+                            : (isDark ? AppColors.darkTextMuted : const Color(0xFF64748B)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             );
           }),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
           // Email Address Input
-          Text(
-            'Email Address',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
-            ),
-          ),
+          Text('Recipient Email Address', style: _labelStyle(isDark)),
           const SizedBox(height: 6),
           TextField(
             controller: controller.notificationEmailController,
-            style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+            ),
             decoration: InputDecoration(
               hintText: 'alerts@company.com',
               filled: true,
-              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                ),
+              ),
+              prefixIcon: const Icon(Icons.email_outlined, size: 18),
             ),
           ),
           const SizedBox(height: 6),
           Text(
-            'Receive an email whenever a new lead is captured',
+            'Multiple email addresses can be separated by commas.',
             style: TextStyle(
               fontSize: 11,
-              color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+              color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
 
           // Save Button
           SizedBox(
-            width: 100,
-            height: 38,
-            child: ElevatedButton(
+            width: 140,
+            height: 40,
+            child: ElevatedButton.icon(
               onPressed: controller.saveNotifications,
+              icon: const Icon(Icons.save_rounded, size: 15, color: Colors.white),
+              label: const Text(
+                'Save Alerts',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0284C7),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Save', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),
         ],
@@ -1839,68 +2399,100 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // 7: TAB 6 - PLACEMENT (SCREENSHOT 3)
+  // TAB 6: PLACEMENT (POSITION & ROUTING)
   // ==========================================
   Widget _buildPlacementTab(BotSettingsController controller, bool isDark) {
-    return CustomCard(
-      padding: const EdgeInsets.all(24),
-      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+    return _buildCardContainer(
+      isDark: isDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text('📐', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 8),
-              Text(
-                'Widget Placement',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          _buildSectionHeader(
+            icon: Icons.layers_outlined,
+            title: 'Widget Placement & Screen Behavior',
+            subtitle: 'Choose where the chat bubble appears on visitor screens and configure route rules.',
+            isDark: isDark,
+            accentColor: controller.currentColor,
+          ),
+          const SizedBox(height: 18),
+
+          // Interactive 2x2 Screen Placement Corner Selector
+          Text('Screen Corner Position', style: _labelStyle(isDark)),
+          const SizedBox(height: 8),
+          Obx(() {
+            final sel = controller.selectedPosition.value;
+
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildCornerPositionBtn('Top Left', sel == 'Top Left', controller, isDark),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildCornerPositionBtn('Top Right', sel == 'Top Right', controller, isDark),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildCornerPositionBtn('Bottom Left', sel == 'Bottom Left', controller, isDark),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildCornerPositionBtn('Bottom Right', sel == 'Bottom Right', controller, isDark),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
 
-          // Row 1: Position & Z-Index
+          const SizedBox(height: 18),
+
+          // Offset X, Offset Y & Z-Index
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Position', style: _formLabelStyle(isDark)),
+                    Text('Offset X (px)', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
-                    Obx(
-                      () => Container(
-                        height: 42,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: _dropdownContainerDecoration(isDark),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: controller.selectedPosition.value,
-                            isExpanded: true,
-                            dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
-                            items: controller.positionOptions.map((pos) {
-                              return DropdownMenuItem<String>(value: pos, child: Text(pos, style: const TextStyle(fontSize: 13)));
-                            }).toList(),
-                            onChanged: (val) {
-                              if (val != null) controller.selectedPosition.value = val;
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildSettingsTextField(controller.offsetXController, isDark),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Z-Index', style: _formLabelStyle(isDark)),
+                    Text('Offset Y (px)', style: _labelStyle(isDark)),
+                    const SizedBox(height: 6),
+                    _buildSettingsTextField(controller.offsetYController, isDark),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Z-Index', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
                     _buildSettingsTextField(controller.zIndexController, isDark),
                   ],
@@ -1909,45 +2501,16 @@ class BotSettingsView extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
 
-          // Row 2: Offset X & Offset Y
+          // Auto-Open Mode & Delay
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Offset X (px)', style: _formLabelStyle(isDark)),
-                    const SizedBox(height: 6),
-                    _buildSettingsTextField(controller.offsetXController, isDark),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Offset Y (px)', style: _formLabelStyle(isDark)),
-                    const SizedBox(height: 6),
-                    _buildSettingsTextField(controller.offsetYController, isDark),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Row 3: Auto-Open Mode & Auto-Open Delay
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Auto-Open Mode', style: _formLabelStyle(isDark)),
+                    Text('Auto-Open Mode', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
                     Obx(
                       () => Container(
@@ -1960,7 +2523,10 @@ class BotSettingsView extends StatelessWidget {
                             isExpanded: true,
                             dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
                             items: controller.autoOpenOptions.map((opt) {
-                              return DropdownMenuItem<String>(value: opt, child: Text(opt, style: const TextStyle(fontSize: 13)));
+                              return DropdownMenuItem<String>(
+                                value: opt,
+                                child: Text(opt, style: const TextStyle(fontSize: 13)),
+                              );
                             }).toList(),
                             onChanged: (val) {
                               if (val != null) controller.selectedAutoOpenMode.value = val;
@@ -1972,12 +2538,12 @@ class BotSettingsView extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Auto-Open Delay (ms)', style: _formLabelStyle(isDark)),
+                    Text('Delay (ms)', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
                     _buildSettingsTextField(controller.autoOpenDelayController, isDark),
                   ],
@@ -1986,16 +2552,18 @@ class BotSettingsView extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Row 4: Hide widget on these pages
+          // Route Exclusions: Hide widget on internal pages
           Row(
             children: [
               const Text('🚫', style: TextStyle(fontSize: 14)),
               const SizedBox(width: 6),
-              Text(
-                'Hide widget on these pages (internal panels)',
-                style: _formLabelStyle(isDark),
+              Expanded(
+                child: Text(
+                  'Hide widget on these pages (internal panels)',
+                  style: _labelStyle(isDark),
+                ),
               ),
             ],
           ),
@@ -2003,39 +2571,56 @@ class BotSettingsView extends StatelessWidget {
           TextField(
             controller: controller.hiddenPagesController,
             maxLines: 4,
-            style: TextStyle(fontSize: 12, fontFamily: 'monospace', color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'monospace',
+              color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+            ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+              fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
               contentPadding: const EdgeInsets.all(12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 6),
           Text(
-            'One per line. The widget won\'t load on these pages — great for post-login user panels/dashboards. Use a path like /dashboard (hides that page and everything under it, on every site), or a domain like app.yoursite.com (hides that whole site/subdomain). Public pages keep showing the widget. No website code changes needed.',
+            'One per line. The widget won\'t load on these paths (e.g. /login, /dashboard, /admin).',
             style: TextStyle(
               fontSize: 11,
-              height: 1.4,
-              color: isDark ? AppColors.darkTextMuted : const Color(0xFF6B7280),
+              color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
 
           // Save Placement Button
           SizedBox(
-            width: 140,
-            height: 38,
-            child: ElevatedButton(
+            width: 170,
+            height: 40,
+            child: ElevatedButton.icon(
               onPressed: controller.savePlacement,
+              icon: const Icon(Icons.layers_rounded, size: 15, color: Colors.white),
+              label: const Text(
+                'Save Placement',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0284C7),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Save Placement', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),
         ],
@@ -2043,79 +2628,86 @@ class BotSettingsView extends StatelessWidget {
     );
   }
 
+  Widget _buildCornerPositionBtn(String label, bool isSel, BotSettingsController controller, bool isDark) {
+    return InkWell(
+      onTap: () {
+        PlatformHelper.selectionHaptic();
+        controller.selectedPosition.value = label;
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSel
+              ? controller.currentColor.withValues(alpha: 0.15)
+              : (isDark ? AppColors.darkSurface : Colors.white),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSel
+                ? controller.currentColor
+                : (isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0)),
+            width: isSel ? 1.5 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isSel ? FontWeight.bold : FontWeight.w500,
+            color: isSel
+                ? controller.currentColor
+                : (isDark ? AppColors.darkTextSecondary : const Color(0xFF475569)),
+          ),
+        ),
+      ),
+    );
+  }
+
   // ==========================================
-  // 8: TAB 7 - PRIVACY (SCREENSHOT 4)
+  // TAB 7: PRIVACY & COMPLIANCE
   // ==========================================
   Widget _buildPrivacyTab(BotSettingsController controller, bool isDark) {
-    return CustomCard(
-      padding: const EdgeInsets.all(24),
-      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+    return _buildCardContainer(
+      isDark: isDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text('🔒', style: TextStyle(fontSize: 18)),
-              const SizedBox(width: 8),
-              Text(
-                'Privacy & Data Retention',
-                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          _buildSectionHeader(
+            icon: Icons.security_rounded,
+            title: 'Privacy & Data Retention',
+            subtitle: 'Configure GDPR & data compliance retention policies for conversation transcripts.',
+            isDark: isDark,
+            accentColor: controller.currentColor,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Row 1: Privacy Policy URL & Visitor Retention
+          // Privacy Policy URL
+          Text('Privacy Policy URL', style: _labelStyle(isDark)),
+          const SizedBox(height: 6),
+          _buildSettingsTextField(controller.privacyPolicyUrlController, isDark),
+
+          const SizedBox(height: 16),
+
+          // Retention Controls
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Privacy Policy URL', style: _formLabelStyle(isDark)),
-                    const SizedBox(height: 6),
-                    _buildSettingsTextField(controller.privacyPolicyUrlController, isDark),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Visitor Retention (days, 0 = forever)', style: _formLabelStyle(isDark)),
+                    Text('Visitor Retention (days, 0 = ∞)', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
                     _buildSettingsTextField(controller.visitorRetentionController, isDark),
                   ],
                 ),
               ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Row 2: Conversation Retention & Transcript Retention
-          Row(
-            children: [
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Conversation Retention (days, 0 = forever)', style: _formLabelStyle(isDark)),
-                    const SizedBox(height: 6),
-                    _buildSettingsTextField(controller.conversationRetentionController, isDark),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Transcript Retention (days)', style: _formLabelStyle(isDark)),
+                    Text('Transcript Retention (days)', style: _labelStyle(isDark)),
                     const SizedBox(height: 6),
                     _buildSettingsTextField(controller.transcriptRetentionController, isDark),
                   ],
@@ -2124,52 +2716,92 @@ class BotSettingsView extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
 
-          // Row 3: Enable Transcript Emails
-          Text('Enable Transcript Emails', style: _formLabelStyle(isDark)),
-          const SizedBox(height: 6),
-          Obx(
-            () => Transform.scale(
-              scale: 0.85,
-              child: Switch(
-                value: controller.enableTranscriptEmails.value,
-                onChanged: (val) => controller.enableTranscriptEmails.value = val,
-                activeTrackColor: const Color(0xFF0284C7),
+          // Enable Transcript Emails
+          Row(
+            children: [
+              Obx(
+                () => Transform.scale(
+                  scale: 0.85,
+                  child: Switch(
+                    value: controller.enableTranscriptEmails.value,
+                    onChanged: (val) => controller.enableTranscriptEmails.value = val,
+                    activeTrackColor: const Color(0xFF0284C7),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Enable Transcript Emails to Visitors', style: _labelStyle(isDark)),
+                    Text(
+                      'Allows visitors to email themselves the complete chat transcript after the conversation.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 14),
 
-          // Row 4: Require Opt-In for Transcripts
-          Text('Require Opt-In for Transcripts', style: _formLabelStyle(isDark)),
-          const SizedBox(height: 6),
-          Obx(
-            () => Transform.scale(
-              scale: 0.85,
-              child: Switch(
-                value: controller.requireOptInTranscripts.value,
-                onChanged: (val) => controller.requireOptInTranscripts.value = val,
-                activeTrackColor: const Color(0xFF0284C7),
+          // Require Opt-In for Transcripts
+          Row(
+            children: [
+              Obx(
+                () => Transform.scale(
+                  scale: 0.85,
+                  child: Switch(
+                    value: controller.requireOptInTranscripts.value,
+                    onChanged: (val) => controller.requireOptInTranscripts.value = val,
+                    activeTrackColor: const Color(0xFF0284C7),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Require Explicit GDPR Opt-In', style: _labelStyle(isDark)),
+                    Text(
+                      'Displays a cookie/privacy consent banner before recording chat histories.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 24),
 
-          // Save Privacy Settings Button
+          // Save Privacy Button
           SizedBox(
-            width: 170,
-            height: 38,
-            child: ElevatedButton(
+            width: 190,
+            height: 40,
+            child: ElevatedButton.icon(
               onPressed: controller.savePrivacy,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0284C7),
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              icon: const Icon(Icons.shield_rounded, size: 15, color: Colors.white),
+              label: const Text(
+                'Save Privacy Settings',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              child: const Text('Save Privacy Settings', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
             ),
           ),
         ],
@@ -2178,21 +2810,129 @@ class BotSettingsView extends StatelessWidget {
   }
 
   // ==========================================
-  // HELPERS
+  // REUSABLE UI BUILDERS & HELPERS
   // ==========================================
-  TextStyle _formLabelStyle(bool isDark) {
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+    required Color accentColor,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 16, color: accentColor),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 12,
+            height: 1.4,
+            color: isDark ? AppColors.darkTextMuted : const Color(0xFF64748B),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCardContainer({required bool isDark, required Widget child}) {
+    return CustomCard(
+      padding: const EdgeInsets.all(18),
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+      borderColor: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+      child: child,
+    );
+  }
+
+  Widget _buildPillToggle(
+    String label,
+    bool isSelected,
+    VoidCallback onTap,
+    bool isDark,
+    Color activeColor,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? activeColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: isSelected
+                ? Colors.white
+                : (isDark ? AppColors.darkTextSecondary : const Color(0xFF64748B)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBulletItem(String text, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('• ', style: TextStyle(fontSize: 14, color: AppColors.secondary)),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.darkTextSecondary : const Color(0xFF475569),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TextStyle _labelStyle(bool isDark) {
     return TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w600,
-      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
+      color: isDark ? AppColors.darkTextSecondary : const Color(0xFF334155),
     );
   }
 
   BoxDecoration _dropdownContainerDecoration(bool isDark) {
     return BoxDecoration(
-      color: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB)),
+      color: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(
+        color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+      ),
     );
   }
 
@@ -2201,13 +2941,26 @@ class BotSettingsView extends StatelessWidget {
       height: 42,
       child: TextField(
         controller: ctrl,
-        style: TextStyle(fontSize: 13, color: isDark ? AppColors.darkTextPrimary : const Color(0xFF1F2937)),
+        style: TextStyle(
+          fontSize: 13,
+          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
+        ),
         decoration: InputDecoration(
           filled: true,
-          fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF9FAFB),
+          fillColor: isDark ? AppColors.darkBackground : const Color(0xFFF8FAFC),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE5E7EB))),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkBorderSubtle : const Color(0xFFE2E8F0),
+            ),
+          ),
         ),
       ),
     );

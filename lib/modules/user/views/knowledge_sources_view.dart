@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../core/responsive/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_stat_counter.dart';
@@ -29,19 +30,27 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
         body: Column(
           children: [
             // Top Sub-Tab Switcher (Sources / Sync Jobs / Search Tester)
-            _buildSubTabBar(isDark),
+            _buildSubTabBar(context, isDark),
 
             // Content Area based on selected sub-tab
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (activeTab == 'sources') _buildSourcesContent(isDark),
-                    if (activeTab == 'sync_jobs') _buildSyncJobsContent(isDark),
-                    if (activeTab == 'test_search') _buildSearchTesterContent(isDark),
-                  ],
+                padding: EdgeInsets.fromLTRB(
+                  Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+                  Responsive.value(context, mobile: 12, tablet: 18, desktop: 24),
+                  Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+                  Responsive.isMobile(context) ? 110 : 40,
+                ),
+                child: ResponsiveContainer(
+                  maxWidth: 1400,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (activeTab == 'sources') _buildSourcesContent(context, isDark),
+                      if (activeTab == 'sync_jobs') _buildSyncJobsContent(context, isDark),
+                      if (activeTab == 'test_search') _buildSearchTesterContent(context, isDark),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -51,7 +60,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
     });
   }
 
-  Widget _buildSubTabBar(bool isDark) {
+  Widget _buildSubTabBar(BuildContext context, bool isDark) {
     final tabs = [
       {'key': 'sources', 'label': 'Sources (12)', 'icon': Icons.folder_special_rounded},
       {'key': 'sync_jobs', 'label': 'Sync Jobs (100)', 'icon': Icons.history_rounded},
@@ -59,7 +68,10 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+        vertical: 10,
+      ),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         border: Border(
@@ -68,64 +80,88 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
           ),
         ),
       ),
-      child: Row(
-        children: tabs.map((t) {
-          final isSelected = controller.activeSubTab.value == t['key'];
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => controller.setSubTab(t['key'] as String),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary
-                      : (isDark ? AppColors.darkCard : AppColors.lightCardHover),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1400),
+          child: Row(
+            children: [
+              Container(
+                constraints: const BoxConstraints(maxWidth: 500),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      t['icon'] as IconData,
-                      size: 14,
-                      color: isSelected
-                          ? Colors.white
-                          : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        t['label'] as String,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: isSelected
-                              ? Colors.white
-                              : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                  children: tabs.map((t) {
+                    final isSelected = controller.activeSubTab.value == t['key'];
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => controller.setSubTab(t['key'] as String),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary
+                                : (isDark ? AppColors.darkCard : AppColors.lightCardHover),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                t['icon'] as IconData,
+                                size: 14,
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  t['label'] as String,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+              const Spacer(),
+              if (!Responsive.isMobile(context))
+                ElevatedButton.icon(
+                  onPressed: () => _showAddSourceDialog(context, isDark),
+                  icon: const Icon(Icons.add_rounded, size: 16),
+                  label: const Text('Add Knowledge Source', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   // 1. Sources Content
-  Widget _buildSourcesContent(bool isDark) {
+  Widget _buildSourcesContent(BuildContext context, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Overall Index Summary Card
         CustomCard(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
           borderColor: AppColors.primary.withValues(alpha: 0.25),
           child: Row(
@@ -140,41 +176,69 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
           ),
         ).animate().fadeIn(duration: 400.ms),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Connected Sources', style: AppTextStyles.titleMedium(isDark: isDark)),
-            ElevatedButton.icon(
-              onPressed: () {
-                _showAddSourceBottomSheet(isDark);
-              },
-              icon: const Icon(Icons.add_rounded, size: 16),
-              label: const Text('Add Source', style: TextStyle(fontSize: 12)),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            Text('Connected Sources (${controller.sources.length})', style: AppTextStyles.titleMedium(isDark: isDark)),
+            if (Responsive.isMobile(context))
+              ElevatedButton.icon(
+                onPressed: () => _showAddSourceDialog(context, isDark),
+                icon: const Icon(Icons.add_rounded, size: 16),
+                label: const Text('Add Source', style: TextStyle(fontSize: 12)),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
               ),
-            ),
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
-        // List of Knowledge Sources
-        Obx(
-          () => ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: controller.sources.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final src = controller.sources[index];
-              return _buildSourceCard(src, isDark);
+        // Responsive Grid of Knowledge Sources (1 / 2 / 3 cols)
+        Obx(() {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = 1;
+              if (constraints.maxWidth >= 1050) {
+                crossAxisCount = 3;
+              } else if (constraints.maxWidth >= 650) {
+                crossAxisCount = 2;
+              }
+
+              if (crossAxisCount == 1) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: controller.sources.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final src = controller.sources[index];
+                    return _buildSourceCard(src, isDark);
+                  },
+                );
+              }
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 14,
+                  mainAxisExtent: 160,
+                ),
+                itemCount: controller.sources.length,
+                itemBuilder: (context, index) {
+                  final src = controller.sources[index];
+                  return _buildSourceCard(src, isDark);
+                },
+              );
             },
-          ),
-        ),
+          );
+        }),
       ],
     );
   }
@@ -184,7 +248,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
       children: [
         AnimatedStatCounter(
           value: value,
-          style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+          style: AppTextStyles.titleLarge(isDark: isDark).copyWith(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 2),
         Text(
@@ -212,6 +276,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
           : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
@@ -235,11 +300,13 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
                   children: [
                     Text(
                       src.title,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.titleSmall(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${src.type} • ${src.documentCount} docs • ${src.chunkCount} chunks',
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
                         color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
@@ -248,6 +315,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
                   ],
                 ),
               ),
+              const SizedBox(width: 6),
               // Status Badge
               CustomBadge(
                 text: src.syncStatus,
@@ -263,9 +331,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(height: 12, color: AppColors.darkBorderSubtle),
-          const SizedBox(height: 6),
+          const Divider(height: 14, color: AppColors.darkBorderSubtle),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -273,7 +339,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
               Row(
                 children: [
                   Text(
-                    'Auto-Sync (${src.syncInterval})',
+                    'Auto (${src.syncInterval})',
                     style: TextStyle(
                       fontSize: 11,
                       color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
@@ -300,7 +366,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.sync_rounded, size: 14),
-                label: Text(isSyncing ? 'Syncing...' : 'Sync Now', style: const TextStyle(fontSize: 11)),
+                label: Text(isSyncing ? 'Syncing' : 'Sync Now', style: const TextStyle(fontSize: 11)),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   backgroundColor: AppColors.secondary,
@@ -314,49 +380,59 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
     );
   }
 
-  void _showAddSourceBottomSheet(bool isDark) {
+  void _showAddSourceDialog(BuildContext context, bool isDark) {
     final urlCtrl = TextEditingController();
 
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Add Knowledge Source', style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Text(
-              'Crawl website URL, sitemap, or upload PDFs to vector index',
-              style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Website / Sitemap URL',
-              hint: 'https://example.com/docs',
-              controller: urlCtrl,
-              prefixIcon: const Icon(Icons.link_rounded),
-            ),
-            const SizedBox(height: 16),
-            CustomButton(
-              text: 'Start Vector Indexing',
-              onPressed: () {
-                Get.back();
-                Get.snackbar('Job Started', 'Vector ingestion worker queued for URL', snackPosition: SnackPosition.TOP);
-              },
-            ),
-          ],
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        child: Container(
+          width: 500,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Add Knowledge Source', style: AppTextStyles.titleMedium(isDark: isDark).copyWith(fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Crawl website URL, sitemap, or upload PDFs to vector index',
+                style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Website / Sitemap URL',
+                hint: 'https://example.com/docs',
+                controller: urlCtrl,
+                prefixIcon: const Icon(Icons.link_rounded),
+              ),
+              const SizedBox(height: 20),
+              CustomButton(
+                text: 'Start Vector Indexing',
+                onPressed: () {
+                  Get.back();
+                  Get.snackbar('Job Started', 'Vector ingestion worker queued for URL', snackPosition: SnackPosition.TOP);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // 2. Sync Jobs Content
-  Widget _buildSyncJobsContent(bool isDark) {
+  Widget _buildSyncJobsContent(BuildContext context, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -366,18 +442,18 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
             Expanded(
               child: _buildJobStatPill('SUCCEEDED', controller.jobsSucceeded.value, AppColors.success, isDark),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: _buildJobStatPill('FAILED', controller.jobsFailed.value, AppColors.error, isDark),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: _buildJobStatPill('TOTAL', controller.jobsTotal.value, AppColors.secondary, isDark),
             ),
           ],
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
         Text('Execution History', style: AppTextStyles.titleMedium(isDark: isDark)),
         const SizedBox(height: 12),
 
@@ -392,7 +468,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
               final isSuccess = job.status == 'SUCCEEDED';
 
               return CustomCard(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(16),
                 backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
                 borderColor: isSuccess
                     ? (isDark ? AppColors.darkBorder : AppColors.lightBorder)
@@ -423,9 +499,9 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
                         color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: isDark ? AppColors.darkSurface : AppColors.lightCardHover,
                         borderRadius: BorderRadius.circular(8),
@@ -486,7 +562,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
 
   Widget _buildJobStatPill(String label, int count, Color color, bool isDark) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(14),
@@ -496,7 +572,7 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
         children: [
           Text(
             '$count',
-            style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 2),
           Text(
@@ -513,7 +589,9 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
   }
 
   // 3. Search Tester Content
-  Widget _buildSearchTesterContent(bool isDark) {
+  Widget _buildSearchTesterContent(BuildContext context, bool isDark) {
+    final isDesktop = Responsive.isDesktop(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -530,116 +608,163 @@ class KnowledgeSourcesView extends GetView<KnowledgeController> {
           ),
         ),
 
-        const SizedBox(height: 16),
-
-        Row(
-          children: [
-            Expanded(
-              child: CustomTextField(
-                label: 'Test Query',
-                hint: 'e.g. MVP development timeline or pricing',
-                controller: controller.searchTestController,
-                prefixIcon: const Icon(Icons.search_rounded),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Obx(
-              () => Container(
-                height: 52,
-                margin: const EdgeInsets.only(top: 20),
-                child: ElevatedButton(
-                  onPressed: controller.isSearching.value ? null : controller.performTestSearch,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                  child: controller.isSearching.value
-                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Test'),
-                ),
-              ),
-            ),
-          ],
-        ),
-
         const SizedBox(height: 20),
 
-        Obx(() {
-          if (controller.testSearchResults.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                child: Column(
-                  children: [
-                    Icon(Icons.manage_search_rounded, size: 48, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Enter a query above to test RAG similarity matches.',
-                      style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          return Column(
+        if (isDesktop)
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Matching Vector Chunks (${controller.testSearchResults.length})', style: AppTextStyles.titleSmall(isDark: isDark)),
-              const SizedBox(height: 12),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.testSearchResults.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final res = controller.testSearchResults[index];
-                  return CustomCard(
-                    padding: const EdgeInsets.all(14),
-                    backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-                    borderColor: AppColors.secondary.withValues(alpha: 0.3),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                res.sourceTitle,
-                                style: AppTextStyles.titleSmall(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            CustomBadge(
-                              text: 'Similarity ${(res.score * 100).toInt()}%',
-                              backgroundColor: AppColors.successSoft,
-                              textColor: AppColors.success,
-                              fontSize: 10,
-                            ),
-                          ],
+              // Left Input Form
+              Expanded(
+                flex: 4,
+                child: CustomCard(
+                  padding: const EdgeInsets.all(20),
+                  backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomTextField(
+                        label: 'Test Query',
+                        hint: 'e.g. MVP development timeline or pricing',
+                        controller: controller.searchTestController,
+                        prefixIcon: const Icon(Icons.search_rounded),
+                      ),
+                      const SizedBox(height: 16),
+                      Obx(
+                        () => CustomButton(
+                          text: controller.isSearching.value ? 'Searching...' : 'Run Similarity Test',
+                          onPressed: controller.isSearching.value ? null : controller.performTestSearch,
+                          isLoading: controller.isSearching.value,
                         ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: isDark ? AppColors.darkSurface : AppColors.lightCardHover,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              // Right Search Results
+              Expanded(
+                flex: 6,
+                child: _buildSearchResultsPane(isDark),
+              ),
+            ],
+          )
+        else
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Test Query',
+                      hint: 'e.g. MVP development timeline or pricing',
+                      controller: controller.searchTestController,
+                      prefixIcon: const Icon(Icons.search_rounded),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Obx(
+                    () => Container(
+                      height: 52,
+                      margin: const EdgeInsets.only(top: 20),
+                      child: ElevatedButton(
+                        onPressed: controller.isSearching.value ? null : controller.performTestSearch,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                        child: controller.isSearching.value
+                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : const Text('Test'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _buildSearchResultsPane(isDark),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSearchResultsPane(bool isDark) {
+    return Obx(() {
+      if (controller.testSearchResults.isEmpty) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Column(
+              children: [
+                Icon(Icons.manage_search_rounded, size: 48, color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                const SizedBox(height: 12),
+                Text(
+                  'Enter a query above to test RAG similarity matches.',
+                  style: TextStyle(color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Matching Vector Chunks (${controller.testSearchResults.length})', style: AppTextStyles.titleSmall(isDark: isDark)),
+          const SizedBox(height: 12),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.testSearchResults.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final res = controller.testSearchResults[index];
+              return CustomCard(
+                padding: const EdgeInsets.all(16),
+                backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                borderColor: AppColors.secondary.withValues(alpha: 0.3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
                           child: Text(
-                            res.contentSnippet,
-                            style: AppTextStyles.bodyMedium(isDark: isDark).copyWith(fontSize: 12),
+                            res.sourceTitle,
+                            style: AppTextStyles.titleSmall(isDark: isDark).copyWith(fontWeight: FontWeight.bold),
                           ),
+                        ),
+                        CustomBadge(
+                          text: 'Similarity ${(res.score * 100).toInt()}%',
+                          backgroundColor: AppColors.successSoft,
+                          textColor: AppColors.success,
+                          fontSize: 10,
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-            ],
-          );
-        }),
-      ],
-    );
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkSurface : AppColors.lightCardHover,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        res.contentSnippet,
+                        style: AppTextStyles.bodyMedium(isDark: isDark).copyWith(fontSize: 12, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    });
   }
 }

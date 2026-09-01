@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import '../../../core/native/platform_helper.dart';
+import '../../../core/responsive/responsive_layout.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/animated_stat_counter.dart';
@@ -30,57 +31,82 @@ class DashboardView extends GetView<DashboardController> {
         backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1: Hero Welcome Banner with 3D Mascot & Live Visitors Stat
-              _buildHeroWelcomeCard(isDark, sharedController),
+          padding: EdgeInsets.fromLTRB(
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            Responsive.value(context, mobile: 12, tablet: 18, desktop: 24),
+            Responsive.value(context, mobile: 16, tablet: 24, desktop: 32),
+            Responsive.isMobile(context) ? 100 : 40,
+          ),
+          child: ResponsiveContainer(
+            maxWidth: 1400,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1: Hero Welcome Banner with 3D Mascot & Live Visitors Stat
+                _buildHeroWelcomeCard(context, isDark, sharedController),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // 2: Section Header for Statistics Overview
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Real-Time Analytics',
-                    style: AppTextStyles.titleLarge(isDark: isDark),
+                // 2: Section Header for Statistics Overview
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Real-Time Analytics',
+                      style: AppTextStyles.titleLarge(isDark: isDark),
+                    ),
+                    CustomBadge(
+                      text: 'Updated Just Now',
+                      backgroundColor: AppColors.primarySoft,
+                      textColor: AppColors.primaryLight,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      fontSize: 10,
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 400.ms),
+
+                const SizedBox(height: 12),
+
+                // 3: 5 Animated Stat Cards Grid (Adaptive 2 / 3 / 5 columns)
+                _buildResponsiveStatCardsGrid(context, isDark),
+
+                const SizedBox(height: 24),
+
+                // 4 & 5: Charts & Recent Leads (Side-by-Side on Desktop, Stacked on Mobile/Tablet)
+                if (Responsive.isDesktop(context))
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: _buildWeeklyConversationsChartCard(isDark),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        flex: 4,
+                        child: _buildRecentLeadsPreviewCard(isDark, sharedController),
+                      ),
+                    ],
+                  )
+                else
+                  Column(
+                    children: [
+                      _buildWeeklyConversationsChartCard(isDark),
+                      const SizedBox(height: 24),
+                      _buildRecentLeadsPreviewCard(isDark, sharedController),
+                    ],
                   ),
-                  CustomBadge(
-                    text: 'Updated Just Now',
-                    backgroundColor: AppColors.primarySoft,
-                    textColor: AppColors.primaryLight,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    fontSize: 10,
-                  ),
-                ],
-              ).animate().fadeIn(duration: 400.ms),
-
-              const SizedBox(height: 12),
-
-              // 3: 5 Animated Stat Cards Grid (Horizontal scroll / 2-column layout)
-              _buildStatCardsGrid(isDark),
-
-              const SizedBox(height: 24),
-
-              // 4: Weekly Conversations Interactive Bar Chart (fl_chart)
-              _buildWeeklyConversationsChartCard(isDark),
-
-              const SizedBox(height: 24),
-
-              // 5: Recent Leads & Live Visitor Activity Stream
-              _buildRecentLeadsPreviewCard(isDark, sharedController),
-            ],
+              ],
+            ),
           ),
         ),
       );
     });
   }
 
-  Widget _buildHeroWelcomeCard(bool isDark, UserSharedController sharedController) {
+  Widget _buildHeroWelcomeCard(BuildContext context, bool isDark, UserSharedController sharedController) {
     return CustomCard(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(Responsive.value(context, mobile: 16, tablet: 20, desktop: 24)),
       backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
       borderColor: AppColors.primary.withValues(alpha: 0.3),
       child: Row(
@@ -133,7 +159,9 @@ class DashboardView extends GetView<DashboardController> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -161,7 +189,6 @@ class DashboardView extends GetView<DashboardController> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => sharedController.switchTab(1),
                       child: Container(
@@ -195,106 +222,125 @@ class DashboardView extends GetView<DashboardController> {
     ).animate().fadeIn(duration: 500.ms).moveY(begin: 10, end: 0);
   }
 
-  Widget _buildStatCardsGrid(bool isDark) {
+  Widget _buildResponsiveStatCardsGrid(BuildContext context, bool isDark) {
     final metrics = controller.statMetrics;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.35,
-      ),
-      itemCount: metrics.length,
-      itemBuilder: (context, index) {
-        final item = metrics[index];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = 2;
+        double childAspectRatio = 1.35;
 
-        return GestureDetector(
-          onTap: () {
-            PlatformHelper.lightHaptic();
-            final titleLower = item.title.toLowerCase();
-            if (titleLower.contains('visitor')) {
-              Get.to(() => const VisitorsView());
-            } else if (titleLower.contains('conversation')) {
-              Get.to(() => const TranscriptsView());
-            } else if (titleLower.contains('message')) {
-              Get.to(() => const MessagesAnalyticsView());
-            } else if (titleLower.contains('lead')) {
-              Get.find<UserSharedController>().switchTab(3); // Leads Tab
-            } else if (titleLower.contains('source') || titleLower.contains('knowledge')) {
-              Get.find<UserSharedController>().switchTab(2); // Sources Tab
-            }
-          },
-          child: CustomCard(
-            padding: const EdgeInsets.all(14),
-            backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
-            borderColor: item.color.withValues(alpha: 0.25),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+        if (constraints.maxWidth >= 1100) {
+          crossAxisCount = 5;
+          childAspectRatio = 1.35;
+        } else if (constraints.maxWidth >= 800) {
+          crossAxisCount = 3;
+          childAspectRatio = 1.4;
+        } else if (constraints.maxWidth >= 500) {
+          crossAxisCount = 2;
+          childAspectRatio = 1.45;
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: childAspectRatio,
+          ),
+          itemCount: metrics.length,
+          itemBuilder: (context, index) {
+            final item = metrics[index];
+
+            return GestureDetector(
+              onTap: () {
+                PlatformHelper.lightHaptic();
+                final titleLower = item.title.toLowerCase();
+                if (titleLower.contains('visitor')) {
+                  Get.to(() => const VisitorsView());
+                } else if (titleLower.contains('conversation')) {
+                  Get.to(() => const TranscriptsView());
+                } else if (titleLower.contains('message')) {
+                  Get.to(() => const MessagesAnalyticsView());
+                } else if (titleLower.contains('lead')) {
+                  Get.find<UserSharedController>().switchTab(3); // Leads Tab
+                } else if (titleLower.contains('source') || titleLower.contains('knowledge')) {
+                  Get.find<UserSharedController>().switchTab(2); // Sources Tab
+                }
+              },
+              child: CustomCard(
+                padding: const EdgeInsets.all(14),
+                backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                borderColor: item.color.withValues(alpha: 0.25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: item.color.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(item.icon, size: 18, color: item.color),
-                    ),
-                    if (item.trend != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.successSoft,
-                          borderRadius: BorderRadius.circular(8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: item.color.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(item.icon, size: 18, color: item.color),
                         ),
-                        child: Text(
-                          item.trend!,
-                          style: const TextStyle(
-                            color: AppColors.success,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                        if (item.trend != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.successSoft,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              item.trend!,
+                              style: const TextStyle(
+                                color: AppColors.success,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnimatedStatCounter(
+                          value: item.value,
+                          style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                      ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnimatedStatCounter(
-                      value: item.value,
-                      style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item.title,
-                      style: AppTextStyles.labelSmall(
-                        color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
-                      ).copyWith(fontSize: 10, letterSpacing: 0.5, fontWeight: FontWeight.w600),
+                        const SizedBox(height: 2),
+                        Text(
+                          item.title,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.labelSmall(
+                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                          ).copyWith(fontSize: 10, letterSpacing: 0.5, fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ).animate().fadeIn(duration: 400.ms, delay: (index * 60).ms).scale(begin: const Offset(0.95, 0.95));
+              ),
+            ).animate().fadeIn(duration: 400.ms, delay: (index * 60).ms).scale(begin: const Offset(0.95, 0.95));
+          },
+        );
       },
     );
   }
 
   Widget _buildWeeklyConversationsChartCard(bool isDark) {
     return CustomCard(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
       borderColor: AppColors.darkBorderSubtle,
       child: Column(
@@ -338,7 +384,7 @@ class DashboardView extends GetView<DashboardController> {
 
           // Bar Chart
           SizedBox(
-            height: 160,
+            height: 180,
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
@@ -418,7 +464,7 @@ class DashboardView extends GetView<DashboardController> {
                     barRods: [
                       BarChartRodData(
                         toY: controller.weeklyConversationCounts[index],
-                        width: 18,
+                        width: 22,
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
                         gradient: const LinearGradient(
                           colors: [AppColors.primaryLight, AppColors.primary],
@@ -442,10 +488,9 @@ class DashboardView extends GetView<DashboardController> {
     ).animate().fadeIn(duration: 500.ms, delay: 200.ms);
   }
 
-
   Widget _buildRecentLeadsPreviewCard(bool isDark, UserSharedController sharedController) {
     return CustomCard(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
