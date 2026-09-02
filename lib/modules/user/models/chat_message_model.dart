@@ -14,15 +14,32 @@ class CitationSource {
   });
 }
 
+class ChatAttachment {
+  final String name;
+  final String type; // 'pdf', 'doc', 'link', 'database'
+  final String size;
+
+  const ChatAttachment({
+    required this.name,
+    required this.type,
+    required this.size,
+  });
+}
+
 class ChatMessageModel {
   final String id;
   final String text;
   final MessageSender sender;
   final DateTime timestamp;
   final List<CitationSource> citations;
+  final List<ChatAttachment> attachments;
   final bool isStreaming;
+  final String? streamingStep;
   final String? modelUsed;
   final int? tokens;
+  final int? latencyMs;
+  final bool? isLiked; // true = up, false = down, null = none
+  final bool isTtsPlaying;
 
   const ChatMessageModel({
     required this.id,
@@ -30,9 +47,14 @@ class ChatMessageModel {
     required this.sender,
     required this.timestamp,
     this.citations = const [],
+    this.attachments = const [],
     this.isStreaming = false,
+    this.streamingStep,
     this.modelUsed,
     this.tokens,
+    this.latencyMs,
+    this.isLiked,
+    this.isTtsPlaying = false,
   });
 
   bool get isUser => sender == MessageSender.user;
@@ -44,9 +66,14 @@ class ChatMessageModel {
     MessageSender? sender,
     DateTime? timestamp,
     List<CitationSource>? citations,
+    List<ChatAttachment>? attachments,
     bool? isStreaming,
+    String? streamingStep,
     String? modelUsed,
     int? tokens,
+    int? latencyMs,
+    bool? isLiked,
+    bool? isTtsPlaying,
   }) {
     return ChatMessageModel(
       id: id ?? this.id,
@@ -54,9 +81,14 @@ class ChatMessageModel {
       sender: sender ?? this.sender,
       timestamp: timestamp ?? this.timestamp,
       citations: citations ?? this.citations,
+      attachments: attachments ?? this.attachments,
       isStreaming: isStreaming ?? this.isStreaming,
+      streamingStep: streamingStep ?? this.streamingStep,
       modelUsed: modelUsed ?? this.modelUsed,
       tokens: tokens ?? this.tokens,
+      latencyMs: latencyMs ?? this.latencyMs,
+      isLiked: isLiked ?? this.isLiked,
+      isTtsPlaying: isTtsPlaying ?? this.isTtsPlaying,
     );
   }
 }
@@ -69,6 +101,7 @@ class ChatSessionModel {
   String sourceMode;
   String modelMode;
   bool debugMode;
+  bool isPinned;
 
   ChatSessionModel({
     required this.id,
@@ -78,6 +111,7 @@ class ChatSessionModel {
     this.sourceMode = 'Auto',
     this.modelMode = 'Balanced',
     this.debugMode = false,
+    this.isPinned = false,
   });
 
   String get lastMessagePreview {
@@ -85,3 +119,4 @@ class ChatSessionModel {
     return messages.last.text;
   }
 }
+

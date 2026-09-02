@@ -64,36 +64,48 @@ class _LiveActivityViewState extends State<LiveActivityView> {
       final isDark = sharedController.isDarkMode.value;
 
       return Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         appBar: AppBar(
-          backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.lightBackground,
           elevation: 0,
           scrolledUnderElevation: 0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios_new_rounded,
               size: 20,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
             ),
             onPressed: () => Get.back(),
           ),
+
           title: Text(
             'Live Activity',
-            style: AppTextStyles.titleMedium(isDark: isDark).copyWith(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTextStyles.titleMedium(
+              isDark: isDark,
+            ).copyWith(fontSize: 17, fontWeight: FontWeight.w700),
           ),
           actions: [
             IconButton(
               icon: Icon(
                 Icons.refresh_rounded,
                 size: 22,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () {
                 PlatformHelper.lightHaptic();
-                Get.snackbar('Refreshed', 'Live telemetry feed synced', snackPosition: SnackPosition.BOTTOM);
+                Get.snackbar(
+                  'Refreshed',
+                  'Live telemetry feed synced',
+                  snackPosition: SnackPosition.BOTTOM,
+                );
               },
             ),
             const SizedBox(width: 8),
@@ -110,29 +122,35 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                 children: [
                   Text(
                     'Live activity (active now)',
-                    style: AppTextStyles.titleLarge(isDark: isDark).copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.titleLarge(
+                      isDark: isDark,
+                    ).copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.successSoft,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: AppColors.success.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          width: 6,
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            color: AppColors.success,
-                            shape: BoxShape.circle,
-                          ),
-                        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: AppColors.success,
+                                shape: BoxShape.circle,
+                              ),
+                            )
+                            .animate(onPlay: (c) => c.repeat(reverse: true))
+                            .scale(
                               begin: const Offset(0.8, 0.8),
                               end: const Offset(1.3, 1.3),
                               duration: 800.ms,
@@ -157,7 +175,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
               // Live Sessions Table Card (From Screenshot)
               CustomCard(
                 padding: const EdgeInsets.all(0),
-                backgroundColor: isDark ? AppColors.darkCard : AppColors.lightSurface,
+                backgroundColor: isDark
+                    ? AppColors.darkCard
+                    : AppColors.lightSurface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -169,7 +189,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary,
                         ),
                       ),
                     ),
@@ -177,13 +199,20 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                      color: isDark
+                          ? AppColors.darkBorderSubtle
+                          : AppColors.lightBorderSubtle,
                     ),
 
                     // Table Columns Header Row (Site, Visitor, Started, Last active, Lead)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      color: isDark ? AppColors.darkSurface : AppColors.lightBackground.withValues(alpha: 0.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      color: isDark
+                          ? AppColors.darkSurface
+                          : AppColors.lightBackground.withValues(alpha: 0.5),
                       child: Row(
                         children: [
                           Expanded(
@@ -228,21 +257,30 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                      color: isDark
+                          ? AppColors.darkBorderSubtle
+                          : AppColors.lightBorderSubtle,
                     ),
 
                     // Table Body Rows (or "No active sessions.")
                     if (_sessions.isEmpty)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 24,
+                        ),
                         child: Text(
                           'No active sessions.',
                           style: TextStyle(
                             fontSize: 13,
-                            color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                            color: isDark
+                                ? AppColors.darkTextMuted
+                                : AppColors.lightTextMuted,
                           ),
                         ),
                       )
+
+                      
                     else
                       ListView.separated(
                         shrinkWrap: true,
@@ -251,13 +289,18 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                         separatorBuilder: (context, index) => Divider(
                           height: 1,
                           thickness: 1,
-                          color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                          color: isDark
+                              ? AppColors.darkBorderSubtle
+                              : AppColors.lightBorderSubtle,
                         ),
                         itemBuilder: (context, index) {
                           final session = _sessions[index];
 
                           return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             child: Row(
                               children: [
                                 // Site
@@ -265,7 +308,11 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                   flex: 3,
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.language_rounded, size: 14, color: AppColors.primaryLight),
+                                      const Icon(
+                                        Icons.language_rounded,
+                                        size: 14,
+                                        color: AppColors.primaryLight,
+                                      ),
                                       const SizedBox(width: 6),
                                       Flexible(
                                         child: Text(
@@ -275,7 +322,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
-                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                            color: isDark
+                                                ? AppColors.darkTextPrimary
+                                                : AppColors.lightTextPrimary,
                                           ),
                                         ),
                                       ),
@@ -304,7 +353,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                            color: isDark
+                                                ? AppColors.darkTextPrimary
+                                                : AppColors.lightTextPrimary,
                                           ),
                                         ),
                                       ),
@@ -319,7 +370,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                     session.started,
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                      color: isDark
+                                          ? AppColors.darkTextMuted
+                                          : AppColors.lightTextMuted,
                                     ),
                                   ),
                                 ),
@@ -331,7 +384,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                     session.lastActive,
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                                      color: isDark
+                                          ? AppColors.darkTextMuted
+                                          : AppColors.lightTextMuted,
                                     ),
                                   ),
                                 ),
@@ -342,7 +397,11 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                   child: Row(
                                     children: [
                                       if (session.lead != 'Anonymous') ...[
-                                        const Icon(Icons.check_circle_rounded, size: 13, color: AppColors.success),
+                                        const Icon(
+                                          Icons.check_circle_rounded,
+                                          size: 13,
+                                          color: AppColors.success,
+                                        ),
                                         const SizedBox(width: 4),
                                       ],
                                       Flexible(
@@ -352,10 +411,16 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: 11,
-                                            fontWeight: session.lead != 'Anonymous' ? FontWeight.w600 : FontWeight.normal,
+                                            fontWeight:
+                                                session.lead != 'Anonymous'
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
                                             color: session.lead != 'Anonymous'
                                                 ? AppColors.success
-                                                : (isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted),
+                                                : (isDark
+                                                      ? AppColors.darkTextMuted
+                                                      : AppColors
+                                                            .lightTextMuted),
                                           ),
                                         ),
                                       ),
@@ -383,14 +448,26 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                       _sessions.clear();
                     },
                     icon: const Icon(Icons.clear_all_rounded, size: 16),
-                    label: const Text('Simulate Empty State', style: TextStyle(fontSize: 12)),
+                    label: const Text(
+                      'Simulate Empty State',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      foregroundColor: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
                       side: BorderSide(
-                        color: isDark ? AppColors.darkBorderSubtle : AppColors.lightBorderSubtle,
+                        color: isDark
+                            ? AppColors.darkBorderSubtle
+                            : AppColors.lightBorderSubtle,
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -407,16 +484,33 @@ class _LiveActivityViewState extends State<LiveActivityView> {
                           started: 'Just now',
                           lastActive: 'Just now',
                           lead: id % 2 == 0 ? 'lead_$id@acme.io' : 'Anonymous',
+                          
                         ),
                       );
                     },
-                    icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
-                    label: const Text('Simulate New Live Visitor', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                    icon: const Icon(
+                      Icons.add_rounded,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Simulate New Live Visitor',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
@@ -432,7 +526,9 @@ class _LiveActivityViewState extends State<LiveActivityView> {
     return TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w700,
-      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+      color: isDark
+          ? AppColors.darkTextSecondary
+          : AppColors.lightTextSecondary,
     );
   }
 }

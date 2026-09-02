@@ -235,7 +235,7 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
 }
 
   // ==========================================
-  // METRICS OVERVIEW (3 Glass Cards)
+  // METRICS OVERVIEW (3 Clean Responsive Cards)
   // ==========================================
   Widget _buildMetricsOverview(bool isDark) {
     final activeCount = _sites.where((s) => s.isActive.value).length;
@@ -253,7 +253,7 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             isDark: isDark,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: _buildMetricCard(
             title: 'Origins Allowed',
@@ -264,7 +264,7 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
             isDark: isDark,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: _buildMetricCard(
             title: 'Live Uptime',
@@ -288,43 +288,51 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
     required bool isDark,
   }) {
     return CustomCard(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       backgroundColor: isDark ? AppColors.darkCard : Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? AppColors.darkTextMuted
-                      : AppColors.lightTextMuted,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.darkTextMuted
+                        : AppColors.lightTextMuted,
+                  ),
                 ),
               ),
-              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 4),
+              Icon(icon, size: 14, color: color),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: isDark
                   ? AppColors.darkTextPrimary
                   : const Color(0xFF111827),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           Text(
             subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9.5,
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -392,22 +400,26 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
           ),
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            _buildFilterChip('all', 'All (${_sites.length})', isDark),
-            const SizedBox(width: 8),
-            _buildFilterChip(
-              'active',
-              'Active (${_sites.where((s) => s.isActive.value).length})',
-              isDark,
-            ),
-            const SizedBox(width: 8),
-            _buildFilterChip(
-              'inactive',
-              'Inactive (${_sites.where((s) => !s.isActive.value).length})',
-              isDark,
-            ),
-          ],
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              _buildFilterChip('all', 'All (${_sites.length})', isDark),
+              const SizedBox(width: 8),
+              _buildFilterChip(
+                'active',
+                'Active (${_sites.where((s) => s.isActive.value).length})',
+                isDark,
+              ),
+              const SizedBox(width: 8),
+              _buildFilterChip(
+                'inactive',
+                'Inactive (${_sites.where((s) => !s.isActive.value).length})',
+                isDark,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -501,6 +513,8 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                     children: [
                       Text(
                         site.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.titleMedium(
                           isDark: isDark,
                         ).copyWith(fontSize: 15, fontWeight: FontWeight.bold),
@@ -508,6 +522,8 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                       const SizedBox(height: 2),
                       Text(
                         site.domain,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark
@@ -518,6 +534,7 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -610,13 +627,17 @@ class _WidgetManagerViewState extends State<WidgetManagerView> {
                         fontSize: 11,
                       ),
                     ),
-                    Text(
-                      site.publicId,
-                      style: const TextStyle(
-                        color: AppColors.primaryLight,
-                        fontFamily: 'monospace',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
+                    Flexible(
+                      child: Text(
+                        site.publicId,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.primaryLight,
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 6),
